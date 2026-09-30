@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-bell text-warning"></i> Notificaciones y Alertas</h1>
+            <p class="page-subtitle">RF12 - Notificaciones del Sistema</p>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-bell-fill" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2" th:text="${#lists.size(citas)}">0</h3>
+                    <p class="mb-0">Citas Programadas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-warning text-dark">
+                <div class="card-body text-center">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">0</h3>
+                    <p class="mb-0">Alertas Pendientes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle-fill" style="font-size: 2.5rem;"></i>
+                    <h3 class="mt-2">0</h3>
+                    <p class="mb-0">Notificaciones Leídas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-bell"></i> Últimas Notificaciones</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> No hay notificaciones nuevas por el momento.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

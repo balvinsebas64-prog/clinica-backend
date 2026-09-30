@@ -1,0 +1,632 @@
+/* ============================================
+   VARIABLES GLOBALES
+   ============================================ */
+:root {
+    --primary: #0066cc;
+    --primary-dark: #004a99;
+    --primary-light: #e6f0fa;
+    --success: #28a745;
+    --success-dark: #1e7e34;
+    --warning: #ffc107;
+    --warning-dark: #d39e00;
+    --danger: #dc3545;
+    --danger-dark: #a71d2a;
+    --info: #17a2b8;
+    --info-dark: #117a8b;
+    --purple: #6f42c1;
+    --dark: #2c3e50;
+    --gray: #6c757d;
+    --light-bg: #dfe6f0;      /* Fondo general (gris azulado suave) */
+    --card-bg: #ffffff;        /* Fondo de tarjetas */
+    --border: #e9ecef;
+    --shadow-sm: 0 2px 6px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+    --radius: 12px;
+    --radius-sm: 8px;
+}
+
+/* ============================================
+   RESET Y BASE
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark);
+    min-height: 100vh;
+}
+
+/* ============================================
+   NAVBAR
+   ============================================ */
+.app-navbar {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%) !important;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 3px solid var(--primary-dark);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.app-navbar .navbar-brand {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #fff !important;
+}
+
+.app-navbar .nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.app-navbar .nav-link:hover {
+    background: rgba(255,255,255,0.15);
+    color: #fff !important;
+}
+
+.app-navbar .dropdown-menu {
+    border-radius: var(--radius-sm);
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    border: none;
+    box-shadow: var(--shadow-lg);
+}
+
+.app-navbar .dropdown-item {
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.app-navbar .dropdown-item:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* ============================================
+   TARJETAS GENERALES
+   ============================================ */
+.card {
+    border-radius: var(--radius);
+    border: none;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    border-bottom: none;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* ============================================
+   STAT CARDS (tarjetas de estadísticas)
+   ============================================ */
+.stat-card {
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-card i {
+    font-size: 2.5rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-number {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0.5rem 0;
+}
+
+.stat-card .stat-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    opacity: 0.95;
+    text-align: center;
+}
+
+.stat-card.bg-primary   { background: linear-gradient(135deg, #0066cc, #004a99); }
+.stat-card.bg-info      { background: linear-gradient(135deg, #17a2b8, #117a8b); }
+.stat-card.bg-success   { background: linear-gradient(135deg, #28a745, #1e7e34); }
+.stat-card.bg-warning   { background: linear-gradient(135deg, #ffc107, #d39e00); color: #212529; }
+.stat-card.bg-danger    { background: linear-gradient(135deg, #dc3545, #a71d2a); }
+.stat-card.bg-purple    { background: linear-gradient(135deg, #6f42c1, #4c2a91); }
+
+/* ============================================
+   TABLAS
+   ============================================ */
+.table-container {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+    background-color: var(--card-bg);
+}
+
+.table thead th {
+    background: #f1f4f8;
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table tbody tr:hover {
+    background: var(--primary-light);
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+.btn {
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-primary { background: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); }
+
+.btn-success { background: var(--success); }
+.btn-success:hover { background: var(--success-dark); }
+
+.btn-warning { background: var(--warning); color: var(--dark); }
+.btn-warning:hover { background: var(--warning-dark); }
+
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: var(--danger-dark); }
+
+.btn-info { background: var(--info); color: white; }
+.btn-info:hover { background: var(--info-dark); color: white; }
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-action {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.85rem;
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+.form-control,
+.form-select {
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--border);
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+    background-color: var(--card-bg);
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(0,102,204,0.15);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   BADGES
+   ============================================ */
+.badge {
+    padding: 0.4rem 0.75rem;
+    font-weight: 500;
+    font-size: 0.8rem;
+    border-radius: 6px;
+}
+
+/* ============================================
+   ALERTAS
+   ============================================ */
+.alert {
+    border-radius: var(--radius-sm);
+    border: none;
+    padding: 1rem 1.25rem;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ============================================
+   TÍTULOS DE PÁGINA
+   ============================================ */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.page-title i {
+    color: var(--primary);
+}
+
+.page-subtitle {
+    color: var(--gray);
+    margin: 0.25rem 0 0 0;
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   FORM CARD (tarjetas de formulario)
+   ============================================ */
+.form-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.form-card-header {
+    padding: 1.25rem 1.75rem;
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: white;
+}
+
+.form-card-body {
+    padding: 2rem;
+}
+
+/* ============================================
+   ESTADO VACÍO
+   ============================================ */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--gray);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    opacity: 0.3;
+    color: var(--primary);
+}
+
+.empty-state p {
+    margin: 1rem 0;
+    font-size: 1.1rem;
+}
+
+/* ============================================
+   BARRA DE BÚSQUEDA
+   ============================================ */
+.search-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.search-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* ============================================
+   ACCESOS RÁPIDOS (panel admin)
+   ============================================ */
+.quick-access-card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: var(--dark);
+    display: block;
+    height: 100%;
+}
+
+.quick-access-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.quick-access-card i {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.quick-access-card h5 {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.quick-access-card small {
+    color: var(--gray);
+    font-size: 0.85rem;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.app-footer {
+    background: var(--dark);
+    color: white;
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 3rem;
+    font-size: 0.9rem;
+}
+
+.app-footer small {
+    color: rgba(255,255,255,0.6);
+}
+
+/* ============================================
+   UTILIDADES
+   ============================================ */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.shadow-hover:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Colores de texto */
+.text-purple { color: var(--purple) !important; }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .page-title { font-size: 1.4rem; }
+    .stat-card { min-height: 120px; padding: 1rem; }
+    .stat-card .stat-number { font-size: 1.75rem; }
+    .form-card-body { padding: 1.25rem; }
+    .table thead th, .table tbody td { padding: 0.75rem 0.5rem; font-size: 0.85rem; }
+    .quick-access-card { padding: 1rem; }
+    .quick-access-card i { font-size: 2rem; }
+}
+
+/* ============================================
+   PERFIL DE USUARIO
+   ============================================ */
+.perfil-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.perfil-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+    font-weight: 700;
+    box-shadow: 0 8px 24px rgba(0,102,204,0.3);
+    flex-shrink: 0;
+}
+
+.perfil-info {
+    flex: 1;
+    min-width: 250px;
+}
+
+.perfil-nombre {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 0 0 0.25rem 0;
+}
+
+.perfil-rol {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.perfil-datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
+}
+
+.perfil-dato {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #f1f4f8;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+}
+
+.perfil-dato i {
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+
+.perfil-dato strong {
+    color: var(--gray);
+    font-weight: 500;
+    margin-right: 0.25rem;
+}
+
+/* Tarjetas de estadísticas del perfil */
+.perfil-stat {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border-bottom: 3px solid var(--primary);
+    transition: transform 0.2s;
+}
+
+.perfil-stat:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.perfil-stat i {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.perfil-stat .num {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.perfil-stat .lbl {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .perfil-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    .perfil-avatar {
+        width: 90px;
+        height: 90px;
+        font-size: 2.25rem;
+    }
+    .perfil-datos {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-x-circle text-danger"></i> Cancelar Citas</h1>
+            <p class="page-subtitle">RF5 - Cancelación de Citas Médicas</p>
+        </div>
+        <button onclick="history.back()" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+</button>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="bi bi-x-circle"></i> Citas Activas</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Médico</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${citas}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}"></td>
+                        <td th:text="${c.medico != null ? 'Dr. ' + c.medico.nombre : 'Sin asignar'}"></td>
+                        <td th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td><span class="badge bg-warning text-dark" th:text="${c.estado}"></span></td>
+                        <td>
+                            <button class="btn btn-danger btn-sm"><i class="bi bi-x-circle"></i> Cancelar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

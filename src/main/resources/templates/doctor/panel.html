@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- PERFIL DEL DOCTOR -->
+    <div class="perfil-card" th:if="${medico != null}">
+        <div class="perfil-avatar" style="background: none; box-shadow: none; padding: 0;">
+            <img th:src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + ${usuario.username}"
+                 alt="Avatar"
+                 style="width: 120px; height: 120px; border-radius: 50%; background: white; box-shadow: 0 8px 24px rgba(0,102,204,0.3);">
+        </div>
+        <div class="perfil-info">
+            <h2 class="perfil-nombre" th:text="'Dr. ' + ${medico.nombre} + ' ' + ${medico.apellido}">Dr. Nombre</h2>
+            <span class="perfil-rol" th:text="${medico.especialidad != null ? medico.especialidad.nombre : 'Sin especialidad'}">Especialidad</span>
+
+            <div class="perfil-datos">
+                <div class="perfil-dato">
+                    <i class="bi bi-envelope-fill"></i>
+                    <strong>Email:</strong> <span th:text="${medico.email}">-</span>
+                </div>
+                <div class="perfil-dato">
+                    <i class="bi bi-telephone-fill"></i>
+                    <strong>Teléfono:</strong> <span th:text="${medico.telefono}">-</span>
+                </div>
+                <div class="perfil-dato">
+                    <i class="bi bi-person-vcard-fill"></i>
+                    <strong>DNI:</strong> <span th:text="${medico.dni}">-</span>
+                </div>
+                <div class="perfil-dato">
+                    <i class="bi bi-award-fill"></i>
+                    <strong>CMP:</strong> <span th:text="${medico.numeroColegiatura}">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Si no hay perfil -->
+    <div th:if="${medico == null}" class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i> No se encontró información del médico. Contacta con administración.
+    </div>
+
+    <!-- ⭐ NUEVOS BOTONES: ACCIONES RÁPIDAS ⭐ -->
+    <h5 class="mb-3"><i class="bi bi-lightning-charge-fill text-warning"></i> Acciones Rápidas</h5>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <a href="/citas/reprogramar" class="text-decoration-none">
+                <div class="card shadow-hover border-0 h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-calendar-week text-info" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Reprogramar Cita</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/pacientes" class="text-decoration-none">
+                <div class="card shadow-hover border-0 h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-people-fill text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Mis Pacientes</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/historias/consulta" class="text-decoration-none">
+                <div class="card shadow-hover border-0 h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-file-medical-fill text-success" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Consultar Historias</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="perfil-stat">
+                <i class="bi bi-calendar-check-fill"></i>
+                <div class="num" th:text="${#lists.size(citas)}">0</div>
+                <div class="lbl">Citas Totales</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="perfil-stat">
+                <i class="bi bi-people-fill"></i>
+                <div class="num" th:text="${#lists.size(pacientes)}">0</div>
+                <div class="lbl">Pacientes</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="perfil-stat">
+                <i class="bi bi-calendar-day-fill"></i>
+                <div class="num">📅</div>
+                <div class="lbl">Hoy</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="perfil-stat">
+                <i class="bi bi-star-fill"></i>
+                <div class="num">5.0</div>
+                <div class="lbl">Rating</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mis Citas -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Mis Citas del Día</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${citas}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}"></td>
+                        <td th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${c.motivo}"></td>
+                        <td><span class="badge bg-warning text-dark" th:text="${c.estado}"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Mis Pacientes -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-people"></i> Mis Pacientes</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>DNI</th>
+                        <th>Teléfono</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${pacientes}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.nombre + ' ' + p.apellido}"></td>
+                        <td th:text="${p.dni}"></td>
+                        <td th:text="${p.telefono}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

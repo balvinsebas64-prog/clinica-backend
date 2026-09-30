@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">
+                <i class="bi bi-search text-info"></i>
+                <span th:if="${esPaciente}">Mi Historia Clínica</span>
+                <span th:if="${!esPaciente}">Consulta de Historias Clínicas</span>
+            </h1>
+            <p class="page-subtitle">
+                <span th:if="${esPaciente}">Consulta segura de tu historial médico</span>
+                <span th:if="${!esPaciente}">RF7 - Consulta Segura de Historias Clínicas</span>
+            </p>
+        </div>
+        <button onclick="history.back()" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </button>
+    </div>
+
+    <!-- Buscador (solo para médicos/admin) -->
+    <div class="card border-0 shadow-sm mb-4" th:if="${!esPaciente}">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label fw-bold"><i class="bi bi-search"></i> Buscar Paciente</label>
+                    <input type="text" class="form-control" placeholder="Nombre o DNI del paciente...">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-info text-white w-100"><i class="bi bi-search"></i> Buscar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso según el rol -->
+    <div class="alert alert-info" th:if="${esPaciente}">
+        <i class="bi bi-shield-lock"></i> <strong>Acceso Personal:</strong> Aquí puedes ver tu historia clínica.
+    </div>
+
+    <div class="alert alert-info" th:if="${!esPaciente}">
+        <i class="bi bi-shield-lock"></i> <strong>Acceso Restringido:</strong> Solo médicos autorizados pueden consultar las historias clínicas.
+    </div>
+
+    <!-- Tabla de Historias -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-file-medical"></i>
+                <span th:if="${esPaciente}">Mi Historia Clínica</span>
+                <span th:if="${!esPaciente}">Historias Disponibles</span>
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>DNI</th>
+                        <th>Alergias</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${pacientes}">
+                        <td th:text="${p.nombre + ' ' + p.apellido}"></td>
+                        <td th:text="${p.dni}"></td>
+                        <td>
+                            <span class="badge bg-warning text-dark"
+                                  th:text="${p.historiaClinica != null ? 'Ver detalle' : 'Sin historia'}"></span>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm text-white">
+                                <i class="bi bi-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pacientes)}">
+                        <td colspan="4" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No tienes historia clínica registrada</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

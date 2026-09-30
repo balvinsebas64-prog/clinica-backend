@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-9">
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus-fill"></i>
+                        <span th:text="${modoEdicion} ? 'Editar Usuario' : 'Registrar Nuevo Usuario'"></span>
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <form th:action="@{/usuarios/guardar}" th:object="${usuario}" method="post">
+
+                        <input type="hidden" th:field="*{id}">
+
+                        <!-- COMBO DE MÉDICOS (solo si es nuevo) -->
+                        <div th:if="${!modoEdicion}" class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-person-badge"></i> Vincular con Médico (opcional)
+                                </h6>
+                                <p class="text-muted small">Si este usuario es un médico, seleccionalo para autocompletar sus datos</p>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Médico</label>
+                                    <select id="selectMedico" name="medicoId" class="form-select" onchange="autocompletar()">
+                                        <option value="">-- Ninguno (usuario normal) --</option>
+                                        <option th:each="m : ${medicos}"
+                                                th:value="${m.id}"
+                                                th:data-email="${m.email}"
+                                                th:data-nombre="${m.nombre + ' ' + m.apellido}"
+                                                th:data-username="${m.usuario != null ? m.usuario.username : ''}"
+                                                th:text="${m.nombre + ' ' + m.apellido + ' - ' + (m.especialidad != null ? m.especialidad.nombre : 'Sin especialidad')}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Username *</label>
+                                <input type="text" class="form-control" th:field="*{username}" required
+                                       placeholder="Ej: dr.garcia" id="inputUsername">
+                                <small class="text-muted">Se autocompleta al elegir médico</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Contraseña *</label>
+                                <input type="text" class="form-control" th:field="*{password}" required
+                                       placeholder="Ej: 1234" value="1234">
+                                <small class="text-muted">Contraseña por defecto: 1234</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Email</label>
+                                <input type="email" class="form-control" th:field="*{email}" id="inputEmail">
+                                <small class="text-muted">Se autocompleta al elegir médico</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Nombre Completo</label>
+                                <input type="text" class="form-control" th:field="*{nombreCompleto}" id="inputNombre">
+                                <small class="text-muted">Se autocompleta al elegir médico</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Rol *</label>
+                            <select class="form-select" name="rolId" required>
+                                <option value="">-- Seleccione un rol --</option>
+                                <option th:each="r : ${roles}"
+                                        th:value="${r.id}"
+                                        th:text="${r.nombre}"
+                                        th:selected="${modoEdicion and usuario.roles != null and !usuario.roles.isEmpty() and usuario.roles[0].id == r.id}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" th:field="*{enabled}" checked>
+                            <label class="form-check-label">Usuario activo</label>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/usuarios" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-save"></i>
+                                <span th:text="${modoEdicion} ? 'Actualizar' : 'Guardar'"></span>
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<!-- JavaScript para autocompletar -->
+<script>
+function autocompletar() {
+    const select = document.getElementById('selectMedico');
+    const option = select.options[select.selectedIndex];
+
+    const email = option.getAttribute('data-email');
+    const nombre = option.getAttribute('data-nombre');
+    const username = option.getAttribute('data-username');
+
+    if (email && email !== 'null') {
+        document.getElementById('inputEmail').value = email;
+    } else {
+        document.getElementById('inputEmail').value = '';
+    }
+
+    if (nombre && nombre !== 'null') {
+        document.getElementById('inputNombre').value = nombre;
+    } else {
+        document.getElementById('inputNombre').value = '';
+    }
+
+    // Sugerir username basado en el email
+    if (username && username !== 'null' && username !== '') {
+        document.getElementById('inputUsername').value = username;
+    } else if (email && email !== 'null') {
+        document.getElementById('inputUsername').value = email.split('@')[0];
+    } else {
+        document.getElementById('inputUsername').value = '';
+    }
+}
+</script>
+
+</body>
+</html>

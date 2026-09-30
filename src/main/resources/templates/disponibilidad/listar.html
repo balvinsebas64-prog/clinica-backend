@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-clock-history text-primary"></i> Disponibilidad Médica</h1>
+            <p class="page-subtitle">RF11 - Visualización de Disponibilidad</p>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-person-badge"></i> Horarios de Médicos</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Médico</th>
+                        <th>Especialidad</th>
+                        <th>Lunes a Viernes</th>
+                        <th>Sábado</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m : ${medicos}">
+                        <td th:text="'Dr. ' + ${m.nombre} + ' ' + ${m.apellido}"></td>
+                        <td><span class="badge bg-info" th:text="${m.especialidad != null ? m.especialidad.nombre : 'Sin asignar'}"></span></td>
+                        <td>08:00 - 16:00</td>
+                        <td>08:00 - 12:00</td>
+                        <td><span class="badge bg-success">Disponible</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

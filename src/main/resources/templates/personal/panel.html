@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container mt-4">
+    <h1 class="mb-4">📋 Panel del Personal Administrativo</h1>
+    <p class="text-muted">Bienvenido, Personal de Recepción</p>
+
+    <!-- ⭐ NUEVOS BOTONES: ACCIONES RÁPIDAS ⭐ -->
+    <h5 class="mb-3"><i class="bi bi-lightning-charge-fill text-warning"></i> Acciones Rápidas</h5>
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <a href="/citas/programar" class="text-decoration-none">
+                <div class="card shadow-hover border-0 h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-calendar-plus text-primary" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Programar Cita</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/citas/cancelar" class="text-decoration-none">
+                <div class="card shadow-hover border-0 h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-x-circle text-danger" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Cancelar Cita</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="/disponibilidad" class="text-decoration-none">
+                <div class="card shadow-hover border-0 h-100">
+                    <div class="card-body text-center p-3">
+                        <i class="bi bi-clock-history text-info" style="font-size: 2rem;"></i>
+                        <h6 class="mt-2 mb-0">Ver Disponibilidad</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row mb-4 g-4">
+        <div class="col-md-6">
+            <div class="card text-center shadow-sm bg-primary text-white border-0">
+                <div class="card-body">
+                    <i class="bi bi-people-fill" style="font-size: 2.5rem;"></i>
+                    <h2 class="mt-2" th:text="${totalPacientes}">0</h2>
+                    <p class="mb-0">Pacientes Registrados</p>
+                    <a href="/pacientes" class="btn btn-light btn-sm mt-2">
+                        <i class="bi bi-arrow-right"></i> Ver Pacientes
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-center shadow-sm bg-info text-white border-0">
+                <div class="card-body">
+                    <i class="bi bi-calendar-check-fill" style="font-size: 2.5rem;"></i>
+                    <h2 class="mt-2" th:text="${totalCitas}">0</h2>
+                    <p class="mb-0">Citas Agendadas</p>
+                    <a href="/citas" class="btn btn-light btn-sm mt-2">
+                        <i class="bi bi-arrow-right"></i> Ver Citas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">📅 Citas Recientes</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${citas}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}"></td>
+                        <td th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${c.motivo}"></td>
+                        <td><span class="badge bg-warning text-dark" th:text="${c.estado}"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

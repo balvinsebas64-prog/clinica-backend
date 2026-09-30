@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-bar-chart text-primary"></i> Generación de Reportes</h1>
+            <p class="page-subtitle">RF10 - Reportes y Estadísticas</p>
+        </div>
+       <button onclick="history.back()" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+</button>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card bg-primary">
+                <i class="bi bi-people-fill"></i>
+                <div class="stat-number" th:text="${totalPacientes}">0</div>
+                <div class="stat-label">Pacientes</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-info">
+                <i class="bi bi-calendar-check-fill"></i>
+                <div class="stat-number" th:text="${totalCitas}">0</div>
+                <div class="stat-label">Citas</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-success">
+                <i class="bi bi-person-badge-fill"></i>
+                <div class="stat-number" th:text="${totalMedicos}">0</div>
+                <div class="stat-label">Médicos</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card bg-warning">
+                <i class="bi bi-shield-lock-fill"></i>
+                <div class="stat-number" th:text="${totalUsuarios}">0</div>
+                <div class="stat-label">Usuarios</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-file-pdf text-danger" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Reporte PDF</h5>
+                    <p class="text-muted">Exportar reportes en PDF</p>
+                    <button class="btn btn-danger"><i class="bi bi-download"></i> Descargar PDF</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-file-excel text-success" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Reporte Excel</h5>
+                    <p class="text-muted">Exportar reportes en Excel</p>
+                    <button class="btn btn-success"><i class="bi bi-download"></i> Descargar Excel</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-printer text-primary" style="font-size: 3rem;"></i>
+                    <h5 class="mt-3">Imprimir</h5>
+                    <p class="text-muted">Imprimir reportes directamente</p>
+                    <button class="btn btn-primary"><i class="bi bi-printer"></i> Imprimir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

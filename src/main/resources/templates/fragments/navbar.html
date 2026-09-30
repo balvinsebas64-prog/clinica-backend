@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<!-- FRAGMENTO: NAVBAR -->
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark shadow-sm app-navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+            <i class="bi bi-hospital fs-3"></i>
+            <span>Hospital EsSalud</span>
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto ms-4">
+
+                <!-- INICIO (todos) -->
+                <li class="nav-item">
+                    <a class="nav-link d-flex align-items-center gap-1" href="/">
+                        <i class="bi bi-house-door"></i> Inicio
+                    </a>
+                </li>
+
+                <!-- PACIENTES (ADMIN, MEDICO, PERSONAL) -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MEDICO', 'PERSONAL_ADMINISTRATIVO')">
+                    <a class="nav-link d-flex align-items-center gap-1" href="/pacientes">
+                        <i class="bi bi-people"></i> Pacientes
+                    </a>
+                </li>
+
+                <!-- MEDICOS (ADMIN, PERSONAL) -->
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'PERSONAL_ADMINISTRATIVO')">
+                    <a class="nav-link d-flex align-items-center gap-1" href="/medicos">
+                        <i class="bi bi-person-badge"></i> Médicos
+                    </a>
+                </li>
+
+                <!-- USUARIOS (solo ADMIN) -->
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link d-flex align-items-center gap-1" href="/usuarios">
+                        <i class="bi bi-shield-lock"></i> Usuarios
+                    </a>
+                </li>
+
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                        <img th:src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + ${#authentication.name}"
+                             alt="Avatar"
+                             style="width: 35px; height: 35px; border-radius: 50%; background: white; border: 2px solid rgba(255,255,255,0.5);">
+                        <span sec:authentication="name">Usuario</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 app-dropdown">
+                        <li sec:authorize="hasRole('ADMIN')">
+                            <a class="dropdown-item" href="/admin"><i class="bi bi-gear-fill text-primary"></i> Panel Admin</a>
+                        </li>
+                        <li sec:authorize="hasRole('MEDICO')">
+                            <a class="dropdown-item" href="/doctor"><i class="bi bi-heart-pulse-fill text-success"></i> Panel Doctor</a>
+                        </li>
+                        <li sec:authorize="hasRole('PACIENTE')">
+                            <a class="dropdown-item" href="/paciente"><i class="bi bi-person-fill text-info"></i> Panel Paciente</a>
+                        </li>
+                        <li sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')">
+                            <a class="dropdown-item" href="/personal"><i class="bi bi-clipboard-check-fill text-warning"></i> Panel Personal</a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+</body>
+</html>

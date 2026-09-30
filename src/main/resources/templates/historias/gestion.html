@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-file-medical text-success"></i> Gestión de Historias Clínicas</h1>
+            <p class="page-subtitle">RF6 - Gestión Digital de Historias Clínicas</p>
+        </div>
+      <button onclick="history.back()" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+</button>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-file-plus"></i> Nueva Historia Clínica</h5>
+        </div>
+        <div class="card-body p-4">
+            <form>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Paciente *</label>
+                    <select class="form-select">
+                        <option>-- Seleccione un paciente --</option>
+                        <option th:each="p : ${pacientes}" th:text="${p.nombre + ' ' + p.apellido}"></option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Alergias</label>
+                    <textarea class="form-control" rows="2" placeholder="Ej: Penicilina, Polen..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Medicamentos</label>
+                    <textarea class="form-control" rows="2" placeholder="Ej: Paracetamol..."></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Condiciones Médicas</label>
+                    <textarea class="form-control" rows="3" placeholder="Ej: Hipertensión, Diabetes..."></textarea>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/historias" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success"><i class="bi bi-save"></i> Guardar Historia</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

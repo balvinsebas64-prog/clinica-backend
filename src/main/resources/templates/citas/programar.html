@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-calendar-plus text-primary"></i> Programar Cita</h1>
+            <p class="page-subtitle">RF3 - Programación de Citas Médicas</p>
+        </div>
+       <button onclick="history.back()" class="btn btn-secondary">
+    <i class="bi bi-arrow-left"></i> Volver
+</button>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-calendar-plus"></i> Nueva Cita</h5>
+        </div>
+        <div class="card-body p-4">
+            <form>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Paciente *</label>
+                        <select class="form-select">
+                            <option>-- Seleccione un paciente --</option>
+                            <option th:each="p : ${pacientes}" th:text="${p.nombre + ' ' + p.apellido}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Especialidad *</label>
+                        <select class="form-select">
+                            <option>-- Seleccione especialidad --</option>
+                            <option th:each="e : ${especialidades}" th:text="${e.nombre}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Médico *</label>
+                        <select class="form-select">
+                            <option>-- Seleccione un médico --</option>
+                            <option th:each="m : ${medicos}" th:text="${'Dr. ' + m.nombre + ' ' + m.apellido}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Fecha y Hora *</label>
+                        <input type="datetime-local" class="form-control">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Motivo de la consulta</label>
+                    <textarea class="form-control" rows="3" placeholder="Describe el motivo..."></textarea>
+                </div>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> <strong>Precio estimado:</strong> S/ 50.00
+                </div>
+                <hr>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/citas" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Programar Cita</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>
