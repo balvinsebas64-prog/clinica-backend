@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 import java.util.Set;
@@ -31,12 +32,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // ⭐ RNF18: HEADERS DE SEGURIDAD
+            .headers(headers -> headers
+                .frameOptions(frame -> frame.sameOrigin())
+                .contentTypeOptions(content -> {})
+                .xssProtection(xss -> {})
+                .cacheControl(cache -> {})
+            )
+
             .authorizeHttpRequests(auth -> auth
                 // ==========================================
                 // RUTAS PÚBLICAS
                 // ==========================================
-                .requestMatchers("/login", "/registro", "/registro/guardar",
-                                 "/css/**", "/js/**", "/img/**").permitAll()
+                .requestMatchers("/login", "/registro", "/registro/guardar", "/publico",
+                                 "/css/**", "/js/**", "/img/**", "/error/**").permitAll()
 
                 // ==========================================
                 // RUTAS POR ROL
@@ -62,12 +71,12 @@ public class SecurityConfig {
                 .requestMatchers("/historias/**").hasAnyRole("ADMIN", "MEDICO")
 
                 // ==========================================
-                // DISPONIBILIDAD - Acceso para varios roles
+                // DISPONIBILIDAD
                 // ==========================================
                 .requestMatchers("/disponibilidad").hasAnyRole("ADMIN", "MEDICO", "PACIENTE", "PERSONAL_ADMINISTRATIVO")
 
                 // ==========================================
-                // NOTIFICACIONES - Acceso para todos
+                // NOTIFICACIONES
                 // ==========================================
                 .requestMatchers("/notificaciones").hasAnyRole("ADMIN", "MEDICO", "PACIENTE", "PERSONAL_ADMINISTRATIVO")
 
@@ -77,7 +86,7 @@ public class SecurityConfig {
                 .requestMatchers("/reportes/**").hasRole("ADMIN")
 
                 // ==========================================
-                // PACIENTES - Admin, Médico, Personal
+                // PACIENTES
                 // ==========================================
                 .requestMatchers("/pacientes/**").hasAnyRole("ADMIN", "MEDICO", "PERSONAL_ADMINISTRATIVO")
 
@@ -94,8 +103,14 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll()
-            );
+            )
+            // ⭐ RNF18: CSRF habilitado por defecto (Spring Security ya lo hace)
+            .csrf(csrf -> csrf.ignoringRequestMatchers(
+                new AntPathRequestMatcher("/h2-console/**")
+            ));
 
         return http.build();
     }

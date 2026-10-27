@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="card border-0 shadow-sm" style="max-width: 600px; margin: 2rem auto;">
+        <div class="card-body p-5 text-center">
+
+            <!-- ICONO DE ÉXITO -->
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+
+            <h2 class="mt-3 mb-2">¡Pago Exitoso!</h2>
+            <p class="text-muted mb-4">Tu pago ha sido procesado correctamente</p>
+
+            <!-- VOUCHER -->
+            <div class="card bg-light border-dashed">
+                <div class="card-body">
+
+                    <h5 class="text-center mb-4">
+                        <i class="bi bi-receipt"></i> VOUCHER DE PAGO
+                    </h5>
+
+                    <div class="text-start">
+                        <p><strong>N° Voucher:</strong> 
+                            <span class="badge bg-primary" th:text="${pago.numeroVoucher}"></span>
+                        </p>
+                        <hr>
+
+                        <p><strong>Monto:</strong> 
+                            <span class="fs-4 fw-bold text-success" th:text="'S/ ' + ${pago.monto}"></span>
+                        </p>
+                        <p><strong>Método de Pago:</strong> 
+                            <span th:text="${pago.metodoPago}"></span>
+                        </p>
+                        <p><strong>Estado:</strong> 
+                            <span class="badge bg-success" th:text="${pago.estado}"></span>
+                        </p>
+                        <p><strong>Fecha:</strong> 
+                            <span th:text="${#temporals.format(pago.fechaPago, 'dd/MM/yyyy HH:mm')}"></span>
+                        </p>
+
+                        <hr>
+
+                        <h6 class="fw-bold">Datos de la Cita:</h6>
+                        <p><strong>Médico:</strong> 
+                            <span th:text="'Dr. ' + ${cita.medico.nombre} + ' ' + ${cita.medico.apellido}"></span>
+                        </p>
+                        <p><strong>Especialidad:</strong> 
+                            <span th:text="${cita.medico.especialidad.nombre}"></span>
+                        </p>
+                        <p><strong>Fecha de la Cita:</strong> 
+                            <span th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- BOTONES -->
+            <div class="d-flex justify-content-center gap-2 mt-4">
+                <a href="/paciente" class="btn btn-secondary">
+                    <i class="bi bi-house"></i> Ir a Mi Panel
+                </a>
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="bi bi-printer"></i> Imprimir Voucher
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<style>
+    .border-dashed {
+        border: 2px dashed #dee2e6 !important;
+    }
+    @media print {
+        .app-sidebar, .btn, .app-footer, .sidebar-toggle {
+            display: none !important;
+        }
+        .app-content {
+            margin-left: 0 !important;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">⚙️ Configuración del Sistema</h1>
+            <p class="text-muted mb-0">Parámetros globales del hospital</p>
+        </div>
+        <a href="/admin" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Panel
+        </a>
+    </div>
+
+    <div th:if="${param.exito}" class="alert alert-success">
+        <i class="bi bi-check-circle"></i> <span th:text="${param.exito}"></span>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-sliders"></i> Parámetros</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Clave</th>
+                        <th>Valor</th>
+                        <th>Descripción</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${configuraciones}">
+                        <td><code th:text="${c.clave}"></code></td>
+                        <td><strong th:text="${c.valor}"></strong></td>
+                        <td th:text="${c.descripcion}"></td>
+                        <td class="text-center">
+                            <a th:href="@{/admin/configuracion/editar/{id}(id=${c.id})}"
+                               class="btn btn-warning btn-sm">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content" style="background-color: #f4f7f6; padding: 30px;">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #2d3748;"><i class="bi bi-file-medical-fill text-info"></i> Mi Historia Clínica</h2>
+            <p class="text-muted mb-0">Consulta tu historial médico y diagnósticos</p>
+        </div>
+    </div>
+
+    <!-- ALERTA SI NO TIENE HISTORIA -->
+    <div th:if="${historia == null or historia.diagnostico == null}" class="alert alert-warning shadow-sm border-0" style="border-radius: 15px;">
+        <i class="bi bi-info-circle"></i> Aún no tienes diagnósticos registrados. Cuando un médico te atienda, aquí aparecerá tu historial.
+    </div>
+
+    <!-- HISTORIA CLÍNICA -->
+    <div class="row g-4" th:if="${historia != null and historia.diagnostico != null}">
+        
+        <!-- Tarjeta del Paciente -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
+                <div class="card-body text-center p-4">
+                    <img th:src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + ${usuario.username}"
+                         alt="Avatar"
+                         style="width: 90px; height: 90px; border-radius: 50%; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 15px;">
+                    <h4 class="fw-bold" th:text="${paciente.nombre} + ' ' + ${paciente.apellido}">Nombre</h4>
+                    <p class="text-muted mb-1" th:text="'DNI: ' + ${paciente.dni}">DNI</p>
+                    <span class="badge bg-info bg-opacity-10 text-info mt-2">Paciente</span>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-start text-muted small">
+                        <p class="mb-1"><i class="bi bi-telephone"></i> <span th:text="${paciente.telefono}"></span></p>
+                        <p class="mb-1"><i class="bi bi-envelope"></i> <span th:text="${paciente.email}"></span></p>
+                        <p class="mb-0"><i class="bi bi-geo-alt"></i> <span th:text="${paciente.direccion}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnósticos y Detalles -->
+        <div class="col-md-8">
+            <!-- Último Diagnóstico -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;">
+                <div class="card-header bg-info text-white" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Último Diagnóstico</h5>
+                </div>
+                <div class="card-body p-4">
+                    <h6 class="text-muted mb-2">Fecha de atención:</h6>
+                    <p th:text="${#temporals.format(historia.fechaCreacion, 'dd/MM/yyyy')}">Fecha</p>
+                    <hr>
+                    <h6 class="text-muted mb-2">Diagnóstico:</h6>
+                    <h5 class="fw-bold text-dark" th:text="${historia.diagnostico}">Diagnóstico</h5>
+                </div>
+            </div>
+
+            <!-- Medicamentos y Condiciones -->
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-primary mb-3"><i class="bi bi-capsule"></i> Medicamentos</h6>
+                            <p class="mb-0 text-muted" th:text="${historia.medicamentos != null ? historia.medicamentos : 'Sin medicamentos registrados'}"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
+                        <div class="card-body">
+                            <h6 class="fw-bold text-danger mb-3"><i class="bi bi-heart-pulse"></i> Condiciones Médicas</h6>
+                            <p class="mb-0 text-muted" th:text="${historia.condicionesMedicas != null ? historia.condicionesMedicas : 'Sin condiciones registradas'}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

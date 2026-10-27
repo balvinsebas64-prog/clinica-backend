@@ -3,17 +3,21 @@
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container py-4">
+<div class="app-content">
+
     <div class="page-header">
         <div>
             <h1 class="page-title"><i class="bi bi-calendar-plus text-primary"></i> Programar Cita</h1>
             <p class="page-subtitle">RF3 - Programación de Citas Médicas</p>
         </div>
-       <button onclick="history.back()" class="btn btn-secondary">
-    <i class="bi bi-arrow-left"></i> Volver
-</button>
+        <button onclick="history.back()" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </button>
     </div>
 
     <div class="card border-0 shadow-sm" style="max-width: 800px; margin: 0 auto;">
@@ -21,55 +25,138 @@
             <h5 class="mb-0"><i class="bi bi-calendar-plus"></i> Nueva Cita</h5>
         </div>
         <div class="card-body p-4">
-            <form>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Paciente *</label>
-                        <select class="form-select">
-                            <option>-- Seleccione un paciente --</option>
-                            <option th:each="p : ${pacientes}" th:text="${p.nombre + ' ' + p.apellido}"></option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Especialidad *</label>
-                        <select class="form-select">
-                            <option>-- Seleccione especialidad --</option>
-                            <option th:each="e : ${especialidades}" th:text="${e.nombre}"></option>
-                        </select>
-                    </div>
+
+            <!-- ALERTA DE ERROR -->
+            <div th:if="${param.error}" class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${param.error}"></span>
+            </div>
+
+            <!-- ALERTA DE ÉXITO -->
+            <div th:if="${param.exito}" class="alert alert-success">
+                <i class="bi bi-check-circle"></i> <span th:text="${param.exito}"></span>
+            </div>
+
+            <form th:action="@{/citas/guardar}" method="post" id="formCita">
+
+                <!-- PACIENTE LOGUEADO -->
+                <div th:if="${esPaciente}" class="alert alert-info mb-4">
+                    <i class="bi bi-person-fill"></i>
+                    <strong>Paciente:</strong>
+                    <span th:text="${pacienteLogueado.nombre + ' ' + pacienteLogueado.apellido}">Nombre</span>
+                    <input type="hidden" name="pacienteId" th:value="${pacienteLogueado.id}">
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Médico *</label>
-                        <select class="form-select">
-                            <option>-- Seleccione un médico --</option>
-                            <option th:each="m : ${medicos}" th:text="${'Dr. ' + m.nombre + ' ' + m.apellido}"></option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Fecha y Hora *</label>
-                        <input type="datetime-local" class="form-control">
-                    </div>
+
+                <!-- SELECCIÓN DE PACIENTE (ADMIN/PERSONAL) -->
+                <div th:if="${!esPaciente}" class="mb-4">
+                    <label class="form-label fw-bold">Paciente *</label>
+                    <select name="pacienteId" class="form-select" required>
+                        <option value="">-- Seleccione un paciente --</option>
+                        <option th:each="p : ${pacientes}"
+                                th:value="${p.id}"
+                                th:text="${p.nombre + ' ' + p.apellido}"></option>
+                    </select>
                 </div>
+
+                <!-- ESPECIALIDAD (SIN PRECIO) -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Especialidad *</label>
+                    <select id="especialidad" class="form-select" onchange="filtrarMedicos()" required>
+                        <option value="">-- Seleccione especialidad --</option>
+                        <option th:each="e : ${especialidades}"
+                                th:value="${e.id}"
+                                th:data-especialidad="${e.id}"
+                                th:text="${e.nombre}"></option>
+                    </select>
+                </div>
+
+                <!-- MÉDICO (SIN PRECIO) -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Médico *</label>
+                    <select id="medico" name="medicoId" class="form-select" required>
+                        <option value="">-- Seleccione un médico --</option>
+                        <option th:each="m : ${medicos}"
+                                th:value="${m.id}"
+                                th:data-especialidad="${m.especialidad != null ? m.especialidad.id : ''}"
+                                th:text="${m.nombre + ' ' + m.apellido + ' - ' + (m.especialidad != null ? m.especialidad.nombre : 'Sin especialidad')}"></option>
+                    </select>
+                </div>
+
+                <!-- FECHA Y HORA -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Fecha y Hora *</label>
+                    <input type="datetime-local" name="fechaHora" class="form-control" required>
+                </div>
+
+                <!-- MOTIVO -->
                 <div class="mb-3">
                     <label class="form-label fw-bold">Motivo de la consulta</label>
-                    <textarea class="form-control" rows="3" placeholder="Describe el motivo..."></textarea>
+                    <textarea name="motivo" class="form-control" rows="3" placeholder="Describe el motivo..."></textarea>
                 </div>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> <strong>Precio estimado:</strong> S/ 50.00
+
+                <!-- ⭐ INFO DEL SEGURO (Reemplaza el precio) -->
+                <div class="alert alert-success">
+                    <i class="bi bi-shield-check"></i>
+                    <strong>Costo para el paciente: S/ 0.00</strong>
+                    <br>
+                    <small>Esta cita está cubierta al 100% por tu seguro EsSalud.</small>
                 </div>
+
                 <hr>
                 <div class="d-flex justify-content-end gap-2">
-                    <a href="/citas" class="btn btn-secondary">Cancelar</a>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Programar Cita</button>
+                    <a href="/paciente" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary" id="btnProgramar">
+                        <i class="bi bi-save"></i> Programar Cita
+                    </button>
                 </div>
+
             </form>
         </div>
     </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    function filtrarMedicos() {
+        const especialidadId = document.getElementById('especialidad').value;
+        const medicoSelect = document.getElementById('medico');
+        const opciones = medicoSelect.querySelectorAll('option');
+
+        opciones.forEach(op => {
+            if (op.value === '') return;
+            const espMedico = op.getAttribute('data-especialidad');
+            if (especialidadId === '' || espMedico === especialidadId) {
+                op.style.display = '';
+            } else {
+                op.style.display = 'none';
+            }
+        });
+
+        medicoSelect.value = '';
+    }
+
+    document.getElementById('formCita').addEventListener('submit', function(e) {
+        const btn = document.getElementById('btnProgramar');
+        if (btn && !btn.disabled) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando...';
+        } else if (btn && btn.disabled) {
+            e.preventDefault();
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-clipboard-pulse text-primary"></i> Registrar Diagnóstico</h1>
+            <p class="page-subtitle">Cita #<span th:text="${cita.id}"></span></p>
+        </div>
+        <a href="/doctor" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-info-circle"></i> Datos de la Cita</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Paciente:</strong> 
+                        <span th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellido}"></span>
+                    </p>
+                    <p><strong>DNI:</strong> <span th:text="${cita.paciente.dni}"></span></p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fecha:</strong> 
+                        <span th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
+                    </p>
+                    <p><strong>Motivo:</strong> <span th:text="${cita.motivo}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Diagnóstico y Tratamiento</h5>
+        </div>
+        <div class="card-body p-4">
+
+            <form th:action="@{/citas/diagnostico/guardar}" method="post">
+                <input type="hidden" name="citaId" th:value="${cita.id}">
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Diagnóstico *</label>
+                    <textarea name="diagnostico" class="form-control" rows="4" required
+                              placeholder="Describe el diagnóstico del paciente..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Medicamentos Recetados</label>
+                    <textarea name="medicamentos" class="form-control" rows="3"
+                              placeholder="Ej: Paracetamol 500mg cada 8 horas..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Condiciones Médicas</label>
+                    <textarea name="condicionesMedicas" class="form-control" rows="3"
+                              placeholder="Ej: Hipertensión, diabetes..."></textarea>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/doctor" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Diagnóstico
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

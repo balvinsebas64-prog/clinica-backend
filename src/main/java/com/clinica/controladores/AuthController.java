@@ -1,10 +1,15 @@
 package com.clinica.controladores;
 
+import com.clinica.entidades.Establecimiento;
+import com.clinica.entidades.EstadoSeguro;
 import com.clinica.entidades.Paciente;
 import com.clinica.entidades.Rol;
+import com.clinica.entidades.Seguro;
 import com.clinica.entidades.Usuario;
+import com.clinica.repositorios.EstablecimientoRepository;
 import com.clinica.repositorios.PacienteRepository;
 import com.clinica.repositorios.RolRepository;
+import com.clinica.repositorios.SeguroRepository;
 import com.clinica.repositorios.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,6 +31,13 @@ public class AuthController {
 
     @Autowired
     private RolRepository rolRepo;
+
+    // ⭐ AGREGADOS PARA CREAR EL SEGURO
+    @Autowired
+    private SeguroRepository seguroRepo;
+
+    @Autowired
+    private EstablecimientoRepository establecimientoRepo;
 
     @GetMapping("/login")
     public String login() {
@@ -99,9 +111,23 @@ public class AuthController {
 
             paciente.setDireccion(direccion);
 
-            pacienteRepo.save(paciente);
+            paciente = pacienteRepo.save(paciente);
 
-            // 3. Redirigir al login con mensaje de éxito
+            // ⭐ 3. CREAR EL SEGURO AUTOMÁTICAMENTE
+            Seguro seguro = new Seguro();
+            seguro.setPaciente(paciente);
+            seguro.setEstado(EstadoSeguro.ACTIVO);
+            seguro.setFechaAfiliacion(LocalDate.now());
+            seguro.setCuotaMensual(50.0);
+            seguro.setNumeroAfiliacion("ESS-2026-" + dni); // Genera número automático
+
+            // Asignar el primer centro asistencial (si existe)
+            Establecimiento centroDefecto = establecimientoRepo.findAll().stream().findFirst().orElse(null);
+            seguro.setEstablecimiento(centroDefecto);
+
+            seguroRepo.save(seguro);
+
+            // 4. Redirigir al login con mensaje de éxito
             return "redirect:/login?registroExitoso";
 
         } catch (Exception e) {

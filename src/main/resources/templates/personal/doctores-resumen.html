@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">🩺 Doctores y Resumen</h1>
+            <p class="text-muted mb-0">Listado de médicos con sus citas y pacientes</p>
+        </div>
+        <a href="/personal" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Panel
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-person-badge"></i> Lista de Doctores</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Doctor</th>
+                        <th>Especialidad</th>
+                        <th class="text-center">Precio</th>
+                        <th class="text-center">Citas</th>
+                        <th class="text-center">Pacientes</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(resumen)}">
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2 mb-0">No hay doctores registrados</p>
+                        </td>
+                    </tr>
+                    <tr th:each="d : ${resumen}">
+                        <td th:text="${d.id}"></td>
+                        <td>
+                            <i class="bi bi-person-badge-fill text-primary"></i>
+                            <span th:text="${d.nombre + ' ' + d.apellido}"></span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary" th:text="${d.especialidad}"></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-success" th:text="'S/ ' + ${d.precio}"></span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-info text-dark" th:text="${d.totalCitas}">0</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-primary" th:text="${d.totalPacientes}">0</span>
+                        </td>
+                        <td class="text-center">
+                            <a th:href="@{/personal/doctores-resumen/{id}(id=${d.id})}"
+                               class="btn btn-primary btn-sm">
+                                <i class="bi bi-eye"></i> Ver detalle
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

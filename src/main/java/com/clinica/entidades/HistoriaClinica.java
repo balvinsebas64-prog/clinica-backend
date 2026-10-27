@@ -21,6 +21,9 @@ public class HistoriaClinica {
     @Column(name = "condiciones_medicas")
     private String condicionesMedicas;
 
+    // ⭐ NUEVO CAMPO
+    private String diagnostico;
+
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
@@ -35,6 +38,8 @@ public class HistoriaClinica {
     public void setMedicamentos(String medicamentos) { this.medicamentos = medicamentos; }
     public String getCondicionesMedicas() { return condicionesMedicas; }
     public void setCondicionesMedicas(String condicionesMedicas) { this.condicionesMedicas = condicionesMedicas; }
+    public String getDiagnostico() { return diagnostico; }
+    public void setDiagnostico(String diagnostico) { this.diagnostico = diagnostico; }
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 }

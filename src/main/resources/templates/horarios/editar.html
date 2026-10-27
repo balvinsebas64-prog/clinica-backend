@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">📅 Horarios del Médico</h1>
+            <p class="text-muted mb-0" th:text="${medico.nombre} + ' ' + ${medico.apellido}">Doctor</p>
+        </div>
+        <a href="/medicos" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+
+    <div th:if="${param.exito}" class="alert alert-success">
+        <i class="bi bi-check-circle"></i> <span th:text="${param.exito}"></span>
+    </div>
+    <div th:if="${param.error}" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i> <span th:text="${param.error}"></span>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-clock-history"></i> Horario Semanal</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted mb-4">
+                <i class="bi bi-info-circle"></i> Marca los días que el médico atiende.
+            </p>
+
+            <form th:action="@{/medicos/{id}/horarios/guardar(id=${medico.id})}" method="post">
+                <div th:each="dia : ${dias}" class="row align-items-center mb-3 p-3 border rounded">
+                    <div class="col-md-2">
+                        <div class="form-check">
+                            <!-- Checkbox -->
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   th:id="${#strings.toLowerCase(dia.name()) + '_disponible'}"
+                                   th:name="${#strings.toLowerCase(dia.name()) + '_disponible'}"
+                                   th:checked="${horarios[dia.name()] != null}"
+                                   onchange="toggleDia(this)">
+                            <label class="form-check-label fw-bold"
+                                   th:for="${#strings.toLowerCase(dia.name()) + '_disponible'}"
+                                   th:text="${dia.etiqueta}">Lunes</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">Hora inicio</label>
+                        <input type="time" class="form-control"
+                               th:id="${#strings.toLowerCase(dia.name()) + '_inicio'}"
+                               th:name="${#strings.toLowerCase(dia.name()) + '_inicio'}"
+                               th:value="${horarios[dia.name()] != null and horarios[dia.name()].horaInicio != null ? horarios[dia.name()].horaInicio.toString().substring(0, 5) : '09:00'}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small">Hora fin</label>
+                        <input type="time" class="form-control"
+                               th:id="${#strings.toLowerCase(dia.name()) + '_fin'}"
+                               th:name="${#strings.toLowerCase(dia.name()) + '_fin'}"
+                               th:value="${horarios[dia.name()] != null and horarios[dia.name()].horaFin != null ? horarios[dia.name()].horaFin.toString().substring(0, 5) : '16:00'}">
+                    </div>
+                    <div class="col-md-2">
+                        <span th:if="${horarios[dia.name()] != null}" class="badge bg-success"><i class="bi bi-check-circle"></i> Configurado</span>
+                        <span th:if="${horarios[dia.name()] == null}" class="badge bg-secondary">No atiende</span>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/medicos" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Guardar Horarios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    // Activa o desactiva las horas al marcar el checkbox
+    function toggleDia(checkbox) {
+        const dia = checkbox.id.replace('_disponible', '');
+        const inicio = document.getElementById(dia + '_inicio');
+        const fin = document.getElementById(dia + '_fin');
+
+        if (inicio && fin) {
+            inicio.disabled = !checkbox.checked;
+            fin.disabled = !checkbox.checked;
+            if (!checkbox.checked) {
+                inicio.value = '';
+                fin.value = '';
+            } else {
+                if (!inicio.value) inicio.value = '09:00';
+                if (!fin.value) fin.value = '16:00';
+            }
+        }
+    }
+
+    // Al cargar la página, aplica la regla a todos los días
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input[type=checkbox][id$="_disponible"]').forEach(cb => {
+            toggleDia(cb);
+        });
+    });
+</script>
+
+</body>
+</html>

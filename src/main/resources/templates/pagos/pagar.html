@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-credit-card text-success"></i> Pagar Cita</h1>
+            <p class="page-subtitle">Realiza el pago de tu consulta</p>
+        </div>
+        <a href="/paciente" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 700px; margin: 0 auto;">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-credit-card"></i> Datos del Pago</h5>
+        </div>
+        <div class="card-body p-4">
+
+            <!-- Detalles de la cita -->
+            <div class="alert alert-info mb-4">
+                <h6 class="fw-bold">📋 Detalles de la Cita:</h6>
+                <p class="mb-1"><strong>Médico:</strong> 
+                    <span th:text="'Dr. ' + ${cita.medico.nombre} + ' ' + ${cita.medico.apellido}"></span>
+                </p>
+                <p class="mb-1"><strong>Especialidad:</strong> 
+                    <span th:text="${cita.medico.especialidad.nombre}"></span>
+                </p>
+                <p class="mb-1"><strong>Fecha:</strong> 
+                    <span th:text="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}"></span>
+                </p>
+                <p class="mb-0"><strong>Motivo:</strong> 
+                    <span th:text="${cita.motivo}"></span>
+                </p>
+            </div>
+
+            <!-- Monto a pagar -->
+            <div class="alert alert-success text-center mb-4">
+                <h6 class="mb-1">Monto a Pagar</h6>
+                <h2 class="mb-0 fw-bold" th:text="'S/ ' + ${cita.precio}">S/ 0.00</h2>
+            </div>
+
+            <!-- Formulario de pago -->
+            <form th:action="@{/pagos/procesar}" method="post">
+                <input type="hidden" name="citaId" th:value="${cita.id}">
+
+                <label class="form-label fw-bold mb-3">Seleccione el Método de Pago:</label>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <input type="radio" class="btn-check" name="metodoPago" id="efectivo" value="EFECTIVO" required>
+                        <label class="btn btn-outline-success w-100 p-3" for="efectivo">
+                            <i class="bi bi-cash-coin fs-3"></i>
+                            <h6 class="mt-2 mb-0">Efectivo</h6>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="radio" class="btn-check" name="metodoPago" id="yape" value="YAPE" required>
+                        <label class="btn btn-outline-success w-100 p-3" for="yape">
+                            <i class="bi bi-phone fs-3"></i>
+                            <h6 class="mt-2 mb-0">Yape</h6>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="radio" class="btn-check" name="metodoPago" id="plin" value="PLIN" required>
+                        <label class="btn btn-outline-success w-100 p-3" for="plin">
+                            <i class="bi bi-phone-vibrate fs-3"></i>
+                            <h6 class="mt-2 mb-0">Plin</h6>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="radio" class="btn-check" name="metodoPago" id="tarjeta" value="TARJETA" required>
+                        <label class="btn btn-outline-success w-100 p-3" for="tarjeta">
+                            <i class="bi bi-credit-card fs-3"></i>
+                            <h6 class="mt-2 mb-0">Tarjeta</h6>
+                        </label>
+                    </div>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/paciente" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check-circle"></i> Confirmar Pago
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-clipboard-pulse text-primary"></i> Mis Diagnósticos</h1>
+            <p class="page-subtitle">Todos los diagnósticos que has registrado</p>
+        </div>
+        <a href="/doctor" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-clipboard-pulse"></i> Lista de Diagnósticos</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th>Diagnóstico</th>
+                        <th>Medicamentos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${citas}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}"></td>
+                        <td th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${c.motivo}"></td>
+                        <td>
+                            <span th:if="${c.paciente.historiaClinica != null and c.paciente.historiaClinica.diagnostico != null}"
+                                  th:text="${c.paciente.historiaClinica.diagnostico}"
+                                  class="text-success fw-bold"></span>
+                            <span th:if="${c.paciente.historiaClinica == null or c.paciente.historiaClinica.diagnostico == null}"
+                                  class="text-muted">Sin diagnóstico</span>
+                        </td>
+                        <td>
+                            <span th:if="${c.paciente.historiaClinica != null and c.paciente.historiaClinica.medicamentos != null}"
+                                  th:text="${c.paciente.historiaClinica.medicamentos}"></span>
+                            <span th:if="${c.paciente.historiaClinica == null or c.paciente.historiaClinica.medicamentos == null}"
+                                  class="text-muted">-</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(citas)}">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No has registrado ningún diagnóstico</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div class="app-content" style="padding: 80px 20px; text-align: center;">
+    <div style="max-width: 600px; margin: 0 auto;">
+        <i class="bi bi-bug-fill" style="font-size: 8rem; color: #dc3545;"></i>
+        <h1 style="font-size: 5rem; font-weight: bold; color: #333; margin: 20px 0;">500</h1>
+        <h3 style="color: #666;">Error interno del servidor</h3>
+        <p style="color: #999; margin: 20px 0;">
+            Algo salió mal. Por favor, intenta nuevamente o contacta al administrador.
+        </p>
+        <a href="/" class="btn btn-primary btn-lg mt-3">
+            <i class="bi bi-house-door"></i> Volver al inicio
+        </a>
+    </div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-cash-coin"></i> Pagar Mi Seguro EsSalud</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <!-- ⚠️ Alerta de error (si ya pagó) -->
+                    <div th:if="${param.error}" class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i> <span th:text="${param.error}"></span>
+                    </div>
+
+                    <!-- 🚫 Si ya pagó el mes, bloquear el formulario -->
+                    <div th:if="${yaPago}" class="text-center py-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                        <h3 class="mt-3">¡Ya estás al día!</h3>
+                        <p class="text-muted">Ya realizaste el pago correspondiente a este mes.</p>
+                        <a href="/paciente" class="btn btn-primary mt-3">
+                            <i class="bi bi-house-door"></i> Volver al Panel
+                        </a>
+                    </div>
+
+                    <!-- Formulario de pago (solo si NO ha pagado) -->
+                    <form th:if="${!yaPago}" th:action="@{/paciente/pagar-seguro/procesar}" method="post" id="formPago">
+                        
+                        <input type="hidden" name="seguroId" th:value="${seguro.id}">
+                        <input type="hidden" name="mesPagado" th:value="${mesAPagar}">
+
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle"></i>
+                            Estás pagando la cuota correspondiente a: <strong th:text="${mesAPagar}"></strong>
+                        </div>
+
+                        <!-- Datos del Seguro -->
+                        <div class="mb-4 p-3 bg-light rounded">
+                            <h6 class="fw-bold"><i class="bi bi-shield-check"></i> Datos del Seguro</h6>
+                            <p class="mb-1"><strong>N° Afiliación:</strong> <span th:text="${seguro.numeroAfiliacion}"></span></p>
+                            <p class="mb-1"><strong>Paciente:</strong> <span th:text="${seguro.paciente.nombre} + ' ' + ${seguro.paciente.apellido}"></span></p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Monto a pagar</label>
+                            <div class="input-group">
+                                <span class="input-group-text">S/</span>
+                                <input type="number" class="form-control" name="monto" th:value="${seguro.cuotaMensual}" readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Método de Pago *</label>
+                            <select class="form-select" name="metodoPago" required>
+                                <option value="">-- Seleccione método --</option>
+                                <option value="YAPE">📱 Yape</option>
+                                <option value="PLIN">📱 Plin</option>
+                                <option value="TARJETA">💳 Tarjeta de Crédito/Débito</option>
+                                <option value="EFECTIVO">💵 Efectivo (en caja)</option>
+                            </select>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/paciente" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg" id="btnPagar">
+                                <i class="bi bi-credit-card"></i> Pagar S/ <span th:text="${seguro.cuotaMensual}"></span>
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    const form = document.getElementById('formPago');
+    if(form) {
+        form.addEventListener('submit', function(e) {
+            const btn = document.getElementById('btnPagar');
+            if (btn && !btn.disabled) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
+            } else if (btn && btn.disabled) {
+                e.preventDefault();
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

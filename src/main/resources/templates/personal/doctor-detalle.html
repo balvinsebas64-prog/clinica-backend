@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">🩺 Detalle del Doctor</h1>
+            <p class="text-muted mb-0">Citas y pacientes atendidos</p>
+        </div>
+        <a href="/personal/doctores-resumen" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+
+    <!-- PERFIL DEL DOCTOR -->
+    <div class="perfil-card" th:if="${medico != null}">
+        <div class="perfil-avatar" style="background: none; box-shadow: none; padding: 0;">
+            <img th:src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + ${medico.nombre + medico.apellido}"
+                 alt="Avatar"
+                 style="width: 120px; height: 120px; border-radius: 50%; background: white; box-shadow: 0 8px 24px rgba(0,102,204,0.3);">
+        </div>
+        <div class="perfil-info">
+            <h2 class="perfil-nombre" th:text="'Dr. ' + ${medico.nombre} + ' ' + ${medico.apellido}">Dr. Nombre</h2>
+            <span class="perfil-rol"
+                  th:text="${medico.especialidad != null ? medico.especialidad.nombre : 'Sin especialidad'}">
+                Especialidad
+            </span>
+
+            <div class="perfil-datos">
+                <div class="perfil-dato">
+                    <i class="bi bi-envelope-fill"></i>
+                    <strong>Email:</strong> <span th:text="${medico.email}">-</span>
+                </div>
+                <div class="perfil-dato">
+                    <i class="bi bi-telephone-fill"></i>
+                    <strong>Teléfono:</strong> <span th:text="${medico.telefono}">-</span>
+                </div>
+                <div class="perfil-dato">
+                    <i class="bi bi-person-vcard-fill"></i>
+                    <strong>DNI:</strong> <span th:text="${medico.dni}">-</span>
+                </div>
+                <div class="perfil-dato">
+                    <i class="bi bi-award-fill"></i>
+                    <strong>CMP:</strong> <span th:text="${medico.numeroColegiatura}">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="perfil-stat">
+                <i class="bi bi-calendar-check-fill"></i>
+                <div class="num" th:text="${#lists.size(citas)}">0</div>
+                <div class="lbl">Citas Totales</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="perfil-stat">
+                <i class="bi bi-people-fill"></i>
+                <div class="num" th:text="${#lists.size(pacientes)}">0</div>
+                <div class="lbl">Pacientes Atendidos</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="perfil-stat">
+                <i class="bi bi-cash-coin"></i>
+                <div class="num"
+                     th:text="'S/ ' + ${medico.especialidad != null ? medico.especialidad.precio : 0}">S/ 0</div>
+                <div class="lbl">Precio Consulta</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLA DE CITAS DEL DOCTOR -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Citas del Doctor</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${citas}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}"></td>
+                        <td th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${c.motivo}"></td>
+                        <td><span class="badge bg-success" th:text="'S/ ' + ${c.precio}"></span></td>
+                        <td>
+                            <span class="badge bg-info" th:text="${c.estado}"></span>
+                            <span th:if="${c.pagoId != null}" class="badge bg-success">PAGADO</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(citas)}">
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2 mb-0">Este doctor no tiene citas registradas</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TABLA DE PACIENTES DEL DOCTOR -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="bi bi-people"></i> Pacientes que Atiende</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>DNI</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="p : ${pacientes}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.nombre + ' ' + p.apellido}"></td>
+                        <td th:text="${p.dni}"></td>
+                        <td th:text="${p.telefono}"></td>
+                        <td th:text="${p.email}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(pacientes)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2 mb-0">Este doctor no tiene pacientes asignados</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

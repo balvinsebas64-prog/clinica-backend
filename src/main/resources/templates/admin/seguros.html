@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1"><i class="bi bi-shield-check text-primary"></i> Gestión de Seguros</h1>
+            <p class="text-muted mb-0">Administra los pagos mensuales de los pacientes</p>
+        </div>
+        <a href="/admin" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Panel
+        </a>
+    </div>
+
+    <!-- Mensajes -->
+    <div th:if="${param.exito}" class="alert alert-success">
+        <i class="bi bi-check-circle"></i> <span th:text="${param.exito}"></span>
+    </div>
+    <div th:if="${param.error}" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i> <span th:text="${param.error}"></span>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm bg-success text-white border-0">
+                <div class="card-body">
+                    <i class="bi bi-check-circle-fill" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2" th:text="${totalActivos}">0</h3>
+                    <p class="mb-0">Seguros Activos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm bg-warning text-dark border-0">
+                <div class="card-body">
+                    <i class="bi bi-exclamation-triangle-fill" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2" th:text="${totalMorosos}">0</h3>
+                    <p class="mb-0">Morosos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center shadow-sm bg-primary text-white border-0">
+                <div class="card-body">
+                    <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
+                    <h3 class="mt-2" th:text="${#lists.size(seguros)}">0</h3>
+                    <p class="mb-0">Total Asegurados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Seguros -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-list"></i> Lista de Seguros</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>DNI</th>
+                        <th>N° Afiliación</th>
+                        <th>Estado</th>
+                        <th>Centro</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="s : ${seguros}">
+                        <td th:text="${s.paciente.nombre} + ' ' + ${s.paciente.apellido}"></td>
+                        <td th:text="${s.paciente.dni}"></td>
+                        <td><code th:text="${s.numeroAfiliacion}"></code></td>
+                        <td>
+                            <span th:if="${s.estado.name() == 'ACTIVO'}" class="badge bg-success">ACTIVO</span>
+                            <span th:if="${s.estado.name() == 'MOROSO'}" class="badge bg-warning text-dark">MOROSO</span>
+                            <span th:if="${s.estado.name() == 'INACTIVO'}" class="badge bg-danger">INACTIVO</span>
+                        </td>
+                        <td th:text="${s.establecimiento != null ? s.establecimiento.nombre : 'No asignado'}"></td>
+                        <td class="text-center">
+                            <form th:if="${s.estado.name() != 'ACTIVO'}" 
+                                  th:action="@{/admin/seguros/pagar/{id}(id=${s.id})}" 
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-success btn-sm"
+                                        onclick="return confirm('¿Registrar el pago mensual?')">
+                                    <i class="bi bi-cash"></i> Registrar Pago
+                                </button>
+                            </form>
+                            <form th:if="${s.estado.name() == 'ACTIVO'}" 
+                                  th:action="@{/admin/seguros/moroso/{id}(id=${s.id})}" 
+                                  method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-warning btn-sm"
+                                        onclick="return confirm('¿Marcar como moroso?')">
+                                    <i class="bi bi-exclamation-triangle"></i> Marcar Moroso
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content">
+
+    <div class="page-header">
+        <div>
+            <h1 class="page-title"><i class="bi bi-calendar-week text-warning"></i> Reprogramar Cita</h1>
+            <p class="page-subtitle">RF4 - Cambiar fecha y hora de la cita</p>
+        </div>
+        <a href="/citas/reprogramar" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="max-width: 700px; margin: 0 auto;">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="bi bi-calendar-week"></i> Datos de la Cita</h5>
+        </div>
+        <div class="card-body p-4">
+
+            <div th:if="${cita == null}" class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle"></i> No se encontró la cita.
+            </div>
+
+            <form th:if="${cita != null}"
+                  th:action="@{/citas/reprogramar/guardar}"
+                  method="post"
+                  id="formReprogramar">
+
+                <input type="hidden" name="citaId" th:value="${cita.id}">
+
+                <!-- INFO DE LA CITA -->
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Cita #<span th:text="${cita.id}"></span></strong><br>
+                    <strong>Paciente:</strong>
+                    <span th:text="${cita.paciente.nombre + ' ' + cita.paciente.apellido}"></span><br>
+                    <strong>Médico:</strong>
+                    <span th:text="${cita.medico != null ? 'Dr. ' + cita.medico.nombre + ' ' + cita.medico.apellido : 'Sin asignar'}"></span>
+                </div>
+
+                <!-- FECHA ACTUAL -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Fecha y hora actual</label>
+                    <input type="text" class="form-control"
+                           th:value="${#temporals.format(cita.fechaHora, 'dd/MM/yyyy HH:mm')}"
+                           disabled>
+                </div>
+
+                <!-- NUEVA FECHA -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Nueva fecha y hora *</label>
+                    <input type="datetime-local"
+                           name="fechaHora"
+                           class="form-control"
+                           th:value="${#temporals.format(cita.fechaHora, 'yyyy-MM-dd''T''HH:mm')}"
+                           required>
+                    <small class="text-muted">Selecciona la nueva fecha y hora de la cita</small>
+                </div>
+
+                <!-- MOTIVO (solo lectura) -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Motivo</label>
+                    <textarea class="form-control" rows="2" disabled th:text="${cita.motivo}"></textarea>
+                </div>
+
+                <hr>
+                <div class="d-flex justify-content-end gap-2">
+                    <a href="/citas/reprogramar" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-warning" id="btnReprogramar">
+                        <i class="bi bi-save"></i> Guardar cambios
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    // Evitar doble submit
+    const formRep = document.getElementById('formReprogramar');
+    if (formRep) {
+        formRep.addEventListener('submit', function() {
+            const btn = document.getElementById('btnReprogramar');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando...';
+            }
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

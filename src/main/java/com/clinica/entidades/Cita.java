@@ -27,6 +27,12 @@ public class Cita {
     @Enumerated(EnumType.STRING)
     private EstadoCita estado;
 
+    // ⭐ NUEVOS CAMPOS
+    private Double precio;
+
+    @Column(name = "pago_id")
+    private Integer pagoId;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -43,6 +49,10 @@ public class Cita {
     public void setMotivo(String motivo) { this.motivo = motivo; }
     public EstadoCita getEstado() { return estado; }
     public void setEstado(EstadoCita estado) { this.estado = estado; }
+    public Double getPrecio() { return precio; }
+    public void setPrecio(Double precio) { this.precio = precio; }
+    public Integer getPagoId() { return pagoId; }
+    public void setPagoId(Integer pagoId) { this.pagoId = pagoId; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

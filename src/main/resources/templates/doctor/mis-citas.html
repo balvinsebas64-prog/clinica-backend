@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content" style="background-color: #f4f7f6; padding: 30px;">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0" style="color: #2d3748;"><i class="bi bi-calendar-check text-success"></i> Mis Citas</h2>
+    </div>
+
+    <div th:if="${param.exito}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle"></i> <span th:text="${param.exito}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle"></i> <span th:text="${param.error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Fecha</th>
+                        <th>Motivo</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="c : ${citas}">
+                        <td th:text="${c.id}"></td>
+                        <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}"></td>
+                        <td th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${c.motivo}"></td>
+                        <td><span class="badge bg-success" th:text="'S/ ' + ${c.precio}"></span></td>
+                        <td>
+                            <span class="badge bg-info" th:text="${c.estado}"></span>
+                            <span th:if="${c.pagoId != null}" class="badge bg-success">PAGADO</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex gap-1 justify-content-center">
+                                <!-- Botón Diagnóstico -->
+                                <a th:if="${c.estado.name() != 'ATENDIDA' and c.estado.name() != 'CANCELADA'}"
+                                   th:href="@{/citas/diagnostico/{id}(id=${c.id})}"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="bi bi-clipboard-pulse"></i> Diagnóstico
+                                </a>
+                                <!-- ⭐ NUEVO BOTÓN: Solicitar Reprogramación -->
+                                <a th:if="${c.estado.name() != 'ATENDIDA' and c.estado.name() != 'CANCELADA'}"
+                                   th:href="@{/citas/solicitar-reprogramacion/{id}(id=${c.id})}"
+                                   class="btn btn-warning btn-sm"
+                                   onclick="return confirm('¿Solicitar al personal que reprograme esta cita?')">
+                                    <i class="bi bi-arrow-repeat"></i> Solicitar Cambio
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(citas)}">
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2 mb-0">No tienes citas programadas</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

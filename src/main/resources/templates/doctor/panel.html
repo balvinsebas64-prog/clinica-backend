@@ -3,174 +3,147 @@
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container py-4">
+<div class="app-content" style="background-color: #f4f7f6; padding: 30px;">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #2d3748;">Panel del Médico</h2>
+            <p class="text-muted mb-0">Bienvenido de nuevo, Dr. <span th:text="${medico.nombre}"></span></p>
+        </div>
+        <div>
+            <span class="badge bg-white text-dark shadow-sm p-2">
+                <i class="bi bi-calendar text-success"></i>
+                <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}">Fecha</span>
+            </span>
+        </div>
+    </div>
 
     <!-- PERFIL DEL DOCTOR -->
-    <div class="perfil-card" th:if="${medico != null}">
-        <div class="perfil-avatar" style="background: none; box-shadow: none; padding: 0;">
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 15px;" th:if="${medico != null}">
+        <div class="card-body d-flex align-items-center p-4">
             <img th:src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + ${usuario.username}"
                  alt="Avatar"
-                 style="width: 120px; height: 120px; border-radius: 50%; background: white; box-shadow: 0 8px 24px rgba(0,102,204,0.3);">
-        </div>
-        <div class="perfil-info">
-            <h2 class="perfil-nombre" th:text="'Dr. ' + ${medico.nombre} + ' ' + ${medico.apellido}">Dr. Nombre</h2>
-            <span class="perfil-rol" th:text="${medico.especialidad != null ? medico.especialidad.nombre : 'Sin especialidad'}">Especialidad</span>
-
-            <div class="perfil-datos">
-                <div class="perfil-dato">
-                    <i class="bi bi-envelope-fill"></i>
-                    <strong>Email:</strong> <span th:text="${medico.email}">-</span>
-                </div>
-                <div class="perfil-dato">
-                    <i class="bi bi-telephone-fill"></i>
-                    <strong>Teléfono:</strong> <span th:text="${medico.telefono}">-</span>
-                </div>
-                <div class="perfil-dato">
-                    <i class="bi bi-person-vcard-fill"></i>
-                    <strong>DNI:</strong> <span th:text="${medico.dni}">-</span>
-                </div>
-                <div class="perfil-dato">
-                    <i class="bi bi-award-fill"></i>
-                    <strong>CMP:</strong> <span th:text="${medico.numeroColegiatura}">-</span>
+                 style="width: 100px; height: 100px; border-radius: 50%; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-right: 25px;">
+            <div>
+                <h3 class="fw-bold mb-1" th:text="'Dr. ' + ${medico.nombre} + ' ' + ${medico.apellido}">Dr. Nombre</h3>
+                <span class="badge bg-success bg-opacity-10 text-success fs-6 mb-2" th:text="${medico.especialidad != null ? medico.especialidad.nombre : 'Sin especialidad'}">Especialidad</span>
+                <div class="d-flex gap-4 mt-2 text-muted">
+                    <span><i class="bi bi-envelope"></i> <span th:text="${medico.email}">-</span></span>
+                    <span><i class="bi bi-telephone"></i> <span th:text="${medico.telefono}">-</span></span>
+                    <span><i class="bi bi-award"></i> CMP: <span th:text="${medico.numeroColegiatura}">-</span></span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Si no hay perfil -->
     <div th:if="${medico == null}" class="alert alert-warning">
         <i class="bi bi-exclamation-triangle"></i> No se encontró información del médico. Contacta con administración.
     </div>
 
-    <!-- ⭐ NUEVOS BOTONES: ACCIONES RÁPIDAS ⭐ -->
-    <h5 class="mb-3"><i class="bi bi-lightning-charge-fill text-warning"></i> Acciones Rápidas</h5>
-    <div class="row g-3 mb-4">
+    <!-- ESTADÍSTICAS (Estilo Moderno) -->
+    <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <a href="/citas/reprogramar" class="text-decoration-none">
-                <div class="card shadow-hover border-0 h-100">
-                    <div class="card-body text-center p-3">
-                        <i class="bi bi-calendar-week text-info" style="font-size: 2rem;"></i>
-                        <h6 class="mt-2 mb-0">Reprogramar Cita</h6>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Mis Citas</h6>
+                            <h2 class="fw-bold mb-0" th:text="${#lists.size(citas)}">0</h2>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-calendar-check-fill text-primary fs-3"></i>
+                        </div>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-md-4">
-            <a href="/pacientes" class="text-decoration-none">
-                <div class="card shadow-hover border-0 h-100">
-                    <div class="card-body text-center p-3">
-                        <i class="bi bi-people-fill text-primary" style="font-size: 2rem;"></i>
-                        <h6 class="mt-2 mb-0">Mis Pacientes</h6>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Mis Pacientes</h6>
+                            <h2 class="fw-bold mb-0" th:text="${#lists.size(pacientes)}">0</h2>
+                        </div>
+                        <div class="bg-info bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-people-fill text-info fs-3"></i>
+                        </div>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-md-4">
-            <a href="/historias/consulta" class="text-decoration-none">
-                <div class="card shadow-hover border-0 h-100">
-                    <div class="card-body text-center p-3">
-                        <i class="bi bi-file-medical-fill text-success" style="font-size: 2rem;"></i>
-                        <h6 class="mt-2 mb-0">Consultar Historias</h6>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 15px;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-2">Pacientes Hoy</h6>
+                            <h2 class="fw-bold mb-0">0</h2> <!-- Aquí podrías poner una variable -->
+                        </div>
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                            <i class="bi bi-calendar-day-fill text-success fs-3"></i>
+                        </div>
                     </div>
                 </div>
-            </a>
-        </div>
-    </div>
-
-    <!-- Estadísticas -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="perfil-stat">
-                <i class="bi bi-calendar-check-fill"></i>
-                <div class="num" th:text="${#lists.size(citas)}">0</div>
-                <div class="lbl">Citas Totales</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="perfil-stat">
-                <i class="bi bi-people-fill"></i>
-                <div class="num" th:text="${#lists.size(pacientes)}">0</div>
-                <div class="lbl">Pacientes</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="perfil-stat">
-                <i class="bi bi-calendar-day-fill"></i>
-                <div class="num">📅</div>
-                <div class="lbl">Hoy</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="perfil-stat">
-                <i class="bi bi-star-fill"></i>
-                <div class="num">5.0</div>
-                <div class="lbl">Rating</div>
             </div>
         </div>
     </div>
 
-    <!-- Mis Citas -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Mis Citas del Día</h5>
-        </div>
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Paciente</th>
-                        <th>Fecha</th>
-                        <th>Motivo</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="c : ${citas}">
-                        <td th:text="${c.id}"></td>
-                        <td th:text="${c.paciente.nombre + ' ' + c.paciente.apellido}"></td>
-                        <td th:text="${#temporals.format(c.fechaHora, 'dd/MM/yyyy HH:mm')}"></td>
-                        <td th:text="${c.motivo}"></td>
-                        <td><span class="badge bg-warning text-dark" th:text="${c.estado}"></span></td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- GRÁFICO DE CITAS -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-4">Resumen de Citas (Últimos 6 meses)</h5>
+                    <canvas id="graficoMedico" height="80"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Mis Pacientes -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0"><i class="bi bi-people"></i> Mis Pacientes</h5>
-        </div>
-        <div class="card-body p-0">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nombre</th>
-                        <th>DNI</th>
-                        <th>Teléfono</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="p : ${pacientes}">
-                        <td th:text="${p.id}"></td>
-                        <td th:text="${p.nombre + ' ' + p.apellido}"></td>
-                        <td th:text="${p.dni}"></td>
-                        <td th:text="${p.telefono}"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    // Gráfico para el médico
+    const ctx = document.getElementById('graficoMedico');
+    new Chart(ctx, {
+        type: 'bar', // Gráfico de barras
+        data: {
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
+            datasets: [{
+                label: 'Citas Atendidas',
+                data: [5, 8, 12, 7, 15, 10], // Datos de ejemplo (puedes hacerlos dinámicos luego)
+                backgroundColor: 'rgba(25, 135, 84, 0.7)', // Verde EsSalud
+                borderRadius: 8,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

@@ -3,10 +3,14 @@
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container py-4">
-    <div class="page-header">
+<div class="app-content">
+
+    <div class="page-header mb-4">
         <div>
             <h1 class="page-title"><i class="bi bi-clock-history text-primary"></i> Disponibilidad Médica</h1>
             <p class="page-subtitle">RF11 - Visualización de Disponibilidad</p>
@@ -18,32 +22,87 @@
             <h5 class="mb-0"><i class="bi bi-person-badge"></i> Horarios de Médicos</h5>
         </div>
         <div class="card-body p-0">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0 align-middle">
                 <thead>
                     <tr>
                         <th>Médico</th>
                         <th>Especialidad</th>
-                        <th>Lunes a Viernes</th>
-                        <th>Sábado</th>
-                        <th>Estado</th>
+                        <th class="text-center small">Lun</th>
+                        <th class="text-center small">Mar</th>
+                        <th class="text-center small">Mié</th>
+                        <th class="text-center small">Jue</th>
+                        <th class="text-center small">Vie</th>
+                        <th class="text-center small">Sáb</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="m : ${medicos}">
-                        <td th:text="'Dr. ' + ${m.nombre} + ' ' + ${m.apellido}"></td>
-                        <td><span class="badge bg-info" th:text="${m.especialidad != null ? m.especialidad.nombre : 'Sin asignar'}"></span></td>
-                        <td>08:00 - 16:00</td>
-                        <td>08:00 - 12:00</td>
-                        <td><span class="badge bg-success">Disponible</span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${m.nombre != null and #strings.startsWith(m.nombre, 'Dra')
+                                               ? 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + m.nombre + '&topType=LongHairBigHair'
+                                               : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + m.nombre + '&topType=ShortHairShortFlat'}"
+                                     alt="Avatar"
+                                     style="width: 32px; height: 32px; border-radius: 50%;">
+                                <span th:text="${m.nombre} + ' ' + ${m.apellido}"></span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info"
+                                  th:text="${m.especialidad != null ? m.especialidad.nombre : 'Sin asignar'}"></span>
+                        </td>
+                        <td class="text-center small" th:with="h=${horariosPorMedico[m.id]['LUNES']}">
+                            <span th:if="${h != null}" th:text="${h.horaInicio.toString().substring(0,5) + ' - ' + h.horaFin.toString().substring(0,5)}"></span>
+                            <span th:if="${h == null}" class="text-muted">—</span>
+                        </td>
+                        <td class="text-center small" th:with="h=${horariosPorMedico[m.id]['MARTES']}">
+                            <span th:if="${h != null}" th:text="${h.horaInicio.toString().substring(0,5) + ' - ' + h.horaFin.toString().substring(0,5)}"></span>
+                            <span th:if="${h == null}" class="text-muted">—</span>
+                        </td>
+                        <td class="text-center small" th:with="h=${horariosPorMedico[m.id]['MIERCOLES']}">
+                            <span th:if="${h != null}" th:text="${h.horaInicio.toString().substring(0,5) + ' - ' + h.horaFin.toString().substring(0,5)}"></span>
+                            <span th:if="${h == null}" class="text-muted">—</span>
+                        </td>
+                        <td class="text-center small" th:with="h=${horariosPorMedico[m.id]['JUEVES']}">
+                            <span th:if="${h != null}" th:text="${h.horaInicio.toString().substring(0,5) + ' - ' + h.horaFin.toString().substring(0,5)}"></span>
+                            <span th:if="${h == null}" class="text-muted">—</span>
+                        </td>
+                        <td class="text-center small" th:with="h=${horariosPorMedico[m.id]['VIERNES']}">
+                            <span th:if="${h != null}" th:text="${h.horaInicio.toString().substring(0,5) + ' - ' + h.horaFin.toString().substring(0,5)}"></span>
+                            <span th:if="${h == null}" class="text-muted">—</span>
+                        </td>
+                        <td class="text-center small" th:with="h=${horariosPorMedico[m.id]['SABADO']}">
+                            <span th:if="${h != null}" th:text="${h.horaInicio.toString().substring(0,5) + ' - ' + h.horaFin.toString().substring(0,5)}"></span>
+                            <span th:if="${h == null}" class="text-muted">—</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(medicos)}">
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2 mb-0">No hay médicos registrados</p>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

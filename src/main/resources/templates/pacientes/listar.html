@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head}"></head>
-<body class="bg-light">
+<body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container mt-4">
+<div class="app-content">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -17,7 +20,6 @@
         </a>
     </div>
 
-    <!-- Mensaje de éxito -->
     <div th:if="${param.exito}" class="alert alert-success alert-dismissible fade show">
         <i class="bi bi-check-circle"></i> <span th:text="${param.exito}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -46,12 +48,10 @@
                         <td th:text="${p.telefono}"></td>
                         <td th:text="${p.email}"></td>
                         <td class="text-center">
-                            <a th:href="@{/pacientes/editar/{id}(id=${p.id})}"
-                               class="btn btn-warning btn-sm">
+                            <a th:href="@{/pacientes/editar/{id}(id=${p.id})}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil"></i> Editar
                             </a>
-                            <a th:href="@{/pacientes/eliminar/{id}(id=${p.id})}"
-                               class="btn btn-danger btn-sm"
+                            <a th:href="@{/pacientes/eliminar/{id}(id=${p.id})}" class="btn btn-danger btn-sm"
                                onclick="return confirm('¿Estás seguro de eliminar este paciente?')">
                                 <i class="bi bi-trash"></i> Eliminar
                             </a>
@@ -71,10 +71,22 @@
         </div>
     </div>
 
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

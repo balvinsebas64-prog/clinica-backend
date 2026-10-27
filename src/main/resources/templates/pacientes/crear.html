@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head}"></head>
-<body class="bg-light">
+<body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container mt-4">
+<div class="app-content">
     <div class="row justify-content-center">
         <div class="col-md-8">
 
@@ -20,8 +23,10 @@
 
                     <form th:action="@{/pacientes/guardar}" th:object="${paciente}" method="post">
 
-                        <!-- ID oculto para edición -->
                         <input type="hidden" th:field="*{id}">
+
+                        <!-- DATOS PERSONALES -->
+                        <h5 class="text-primary mb-3"><i class="bi bi-person-fill"></i> Datos Personales</h5>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -61,12 +66,39 @@
                             <textarea class="form-control" th:field="*{direccion}" rows="2"></textarea>
                         </div>
 
+                        <!-- ⭐ DATOS DEL SEGURO -->
+                        <hr class="my-4">
+                        <h5 class="text-primary mb-3"><i class="bi bi-shield-check"></i> Datos del Seguro EsSalud</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Número de Afiliación *</label>
+                                <input type="text" 
+                                       name="numeroAfiliacion" 
+                                       class="form-control" 
+                                       placeholder="Ej: ESS-2026-12345678" 
+                                       th:value="${seguro != null ? seguro.numeroAfiliacion : ''}" 
+                                       required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Centro Asistencial Asignado *</label>
+                                <select name="establecimientoId" class="form-select" required>
+                                    <option value="">-- Seleccione centro --</option>
+                                    <option th:each="est : ${establecimientos}" 
+                                            th:value="${est.id}" 
+                                            th:text="${est.nombre}"
+                                            th:selected="${seguro != null and seguro.establecimiento != null and seguro.establecimiento.id == est.id}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
                         <hr>
                         <div class="d-flex justify-content-end gap-2">
                             <a href="/pacientes" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Cancelar
                             </a>
-                            <button type="submit" class="btn"
+                            <button type="submit" class="btn" 
                                     th:classappend="${modoEdicion} ? 'btn-warning' : 'btn-success'">
                                 <i class="bi bi-save"></i>
                                 <span th:text="${modoEdicion} ? 'Actualizar Paciente' : 'Guardar Paciente'"></span>
@@ -80,10 +112,23 @@
 
         </div>
     </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

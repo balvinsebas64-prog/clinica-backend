@@ -1,0 +1,241 @@
+/* ============================================
+   PÁGINA PÚBLICA - HOSPITAL ESSALUD
+   ============================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f0f4f8;
+}
+
+/* ============================================
+   NAVBAR CON BOTONES Y LOGIN
+   ============================================ */
+.public-navbar {
+    background: linear-gradient(135deg, #0066cc, #004a99);
+    padding: 0.75rem 0;
+    box-shadow: 0 4px 20px rgba(0,102,204,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.public-navbar .container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* LOGO (izquierda) */
+.public-navbar .navbar-brand {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    margin-right: auto;
+}
+
+.public-navbar .navbar-brand:hover {
+    color: white;
+}
+
+/* BOTONES DE NAVEGACIÓN (centro) */
+.nav-menu {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.nav-btn:hover {
+    background: white;
+    color: #0066cc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.nav-btn.active {
+    background: white;
+    color: #0066cc;
+    border-color: white;
+}
+
+/* BOTÓN INICIAR SESIÓN (derecha) */
+.btn-login-top {
+    background: white;
+    color: #0066cc;
+    border: 2px solid white;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+.btn-login-top:hover {
+    background: #f0f4f8;
+    color: #004a99;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* ============================================
+   HERO
+   ============================================ */
+.hero {
+    background: linear-gradient(135deg, #0066cc 0%, #004a99 100%);
+    color: white;
+    padding: 3rem 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    position: relative;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    position: relative;
+}
+
+/* ============================================
+   SECCIONES
+   ============================================ */
+.seccion {
+    display: none;
+    padding: 3rem 0;
+    animation: fadeIn 0.5s;
+}
+
+.seccion.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   TARJETAS
+   ============================================ */
+.card-info {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    height: 100%;
+}
+
+.card-info:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.card-info i {
+    font-size: 2.5rem;
+    color: #0066cc;
+    margin-bottom: 1rem;
+}
+
+.card-info h5 {
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.card-info p {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.public-footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    margin-top: 4rem;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 992px) {
+    .public-navbar .container {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+    .public-navbar .navbar-brand {
+        margin-right: 0;
+    }
+    .nav-menu {
+        justify-content: center;
+        width: 100%;
+    }
+    .btn-login-top {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    .btn-login-top {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    .hero h1 { font-size: 1.75rem; }
+    .hero p { font-size: 0.95rem; }
+}
+

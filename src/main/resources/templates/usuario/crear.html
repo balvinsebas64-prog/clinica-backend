@@ -3,9 +3,12 @@
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container py-4">
+<div class="app-content">
     <div class="row justify-content-center">
         <div class="col-md-9">
 
@@ -22,7 +25,6 @@
 
                         <input type="hidden" th:field="*{id}">
 
-                        <!-- COMBO DE MÉDICOS (solo si es nuevo) -->
                         <div th:if="${!modoEdicion}" class="card bg-light border-0 mb-4">
                             <div class="card-body">
                                 <h6 class="text-primary mb-3">
@@ -109,12 +111,12 @@
 
         </div>
     </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
 
-<!-- JavaScript para autocompletar -->
 <script>
 function autocompletar() {
     const select = document.getElementById('selectMedico');
@@ -136,7 +138,6 @@ function autocompletar() {
         document.getElementById('inputNombre').value = '';
     }
 
-    // Sugerir username basado en el email
     if (username && username !== 'null' && username !== '') {
         document.getElementById('inputUsername').value = username;
     } else if (email && email !== 'null') {
@@ -145,6 +146,16 @@ function autocompletar() {
         document.getElementById('inputUsername').value = '';
     }
 }
+
+document.addEventListener('click', function(e) {
+    const sidebar = document.querySelector('.app-sidebar');
+    const toggle = document.querySelector('.sidebar-toggle');
+    if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+            sidebar.classList.remove('show');
+        }
+    }
+});
 </script>
 
 </body>

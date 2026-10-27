@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head th:replace="~{fragments/head :: head}"></head>
-<body class="bg-light">
+<body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container-fluid mt-4">
+<div class="app-content">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -17,23 +20,20 @@
         </a>
     </div>
 
-    <!-- BARRA DE BÚSQUEDA -->
+    <!-- Filtros -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <form method="get" action="/medicos" class="row g-3">
                 <div class="col-md-5">
                     <label class="form-label fw-bold"><i class="bi bi-search"></i> Buscar médico</label>
                     <input type="text" name="buscar" class="form-control"
-                           placeholder="Nombre o apellido del médico..."
-                           th:value="${busqueda}">
+                           placeholder="Nombre o apellido del médico..." th:value="${busqueda}">
                 </div>
                 <div class="col-md-5">
                     <label class="form-label fw-bold"><i class="bi bi-filter"></i> Filtrar por especialidad</label>
                     <select name="especialidad" class="form-select">
                         <option value="">-- Todas las especialidades --</option>
-                        <option th:each="esp : ${especialidades}"
-                                th:value="${esp.id}"
-                                th:text="${esp.nombre}"
+                        <option th:each="esp : ${especialidades}" th:value="${esp.id}" th:text="${esp.nombre}"
                                 th:selected="${especialidadSeleccionada != null and especialidadSeleccionada == esp.id}"></option>
                     </select>
                 </div>
@@ -59,9 +59,10 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
+    <!-- Tabla -->
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
-            <table class="table table-striped table-hover mb-0">
+            <table class="table table-striped table-hover mb-0 align-middle">
                 <thead class="table-success">
                     <tr>
                         <th>ID</th>
@@ -71,7 +72,6 @@
                         <th>Teléfono</th>
                         <th>CMP</th>
                         <th>🔑 Usuario</th>
-                        <th>🔑 Contraseña</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -79,7 +79,14 @@
                     <tr th:each="m : ${medicos}">
                         <td th:text="${m.id}"></td>
                         <td>
-                            <strong th:text="${m.nombre}"></strong>
+                            <div class="d-flex align-items-center gap-2">
+                                <img th:src="${m.nombre != null and #strings.startsWith(m.nombre, 'Dra')
+                                               ? 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + m.nombre + '&topType=LongHairBigHair'
+                                               : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + m.nombre + '&topType=ShortHairShortFlat'}"
+                                     alt="Avatar"
+                                     style="width: 32px; height: 32px; border-radius: 50%;">
+                                <strong th:text="${m.nombre} + ' ' + ${m.apellido}"></strong>
+                            </div>
                         </td>
                         <td th:text="${m.dni}"></td>
                         <td>
@@ -92,24 +99,32 @@
                             <code th:if="${m.usuario != null}" th:text="${m.usuario.username}" class="text-primary"></code>
                             <span th:if="${m.usuario == null}" class="text-muted small">Sin usuario</span>
                         </td>
-                        <td>
-                            <code th:if="${m.usuario != null}" th:text="${m.usuario.password}" class="text-danger"></code>
-                            <span th:if="${m.usuario == null}" class="text-muted small">-</span>
-                        </td>
                         <td class="text-center">
-                            <a th:href="@{/medicos/editar/{id}(id=${m.id})}" class="btn btn-warning btn-sm">
+                            <!-- ⭐ Botón Horarios -->
+                            <a th:href="@{/medicos/{id}/horarios(id=${m.id})}"
+                               class="btn btn-info btn-sm"
+                               title="Gestionar horarios">
+                                <i class="bi bi-clock"></i>
+                            </a>
+                            <!-- Editar -->
+                            <a th:href="@{/medicos/editar/{id}(id=${m.id})}"
+                               class="btn btn-warning btn-sm"
+                               title="Editar médico">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                            <a th:href="@{/medicos/eliminar/{id}(id=${m.id})}" class="btn btn-danger btn-sm"
+                            <!-- Eliminar -->
+                            <a th:href="@{/medicos/eliminar/{id}(id=${m.id})}"
+                               class="btn btn-danger btn-sm"
+                               title="Eliminar médico"
                                onclick="return confirm('¿Eliminar este médico?')">
                                 <i class="bi bi-trash"></i>
                             </a>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(medicos)}">
-                        <td colspan="9" class="text-center text-muted py-4">
-                            <i class="bi bi-search" style="font-size: 2rem;"></i>
-                            <p class="mt-2">No se encontraron médicos</p>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mt-2 mb-0">No hay médicos registrados</p>
                         </td>
                     </tr>
                 </tbody>
@@ -117,10 +132,22 @@
         </div>
     </div>
 
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

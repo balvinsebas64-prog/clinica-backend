@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head th:replace="~{fragments/head :: head}"></head>
+<body>
+
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
+
+<div class="app-content" style="background-color: #f4f7f6; padding: 30px;">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-header" th:classappend="${cita != null} ? 'bg-warning text-dark' : 'bg-primary text-white'" style="border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    <h4 class="mb-0" th:text="${cita != null} ? 'Reprogramación Solicitada' : 'Programar Nueva Cita'">
+                        Nueva Cita
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+
+                    <div th:if="${param.error}" class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i> <span th:text="${param.error}"></span>
+                    </div>
+                    <div th:if="${param.exito}" class="alert alert-success">
+                        <i class="bi bi-check-circle"></i> <span th:text="${param.exito}"></span>
+                    </div>
+
+                    <!-- ⭐ LÍNEA CORREGIDA: Sin comillas simples en las rutas -->
+                    <form th:action="${cita != null} ? @{/citas/personal/programar/guardar} : @{/citas/guardar}" method="post" id="formCita">
+                        
+                        <input type="hidden" th:if="${cita != null}" name="citaId" th:value="${cita.id}">
+
+                        <!-- PACIENTE -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Paciente *</label>
+                            <input type="text" th:if="${pacienteSeleccionado != null}" class="form-control bg-light" 
+                                   th:value="${pacienteSeleccionado.nombre} + ' ' + ${pacienteSeleccionado.apellido}" readonly>
+                            <input type="hidden" th:if="${pacienteSeleccionado != null}" name="pacienteId" th:value="${pacienteSeleccionado.id}">
+                            
+                            <select th:unless="${pacienteSeleccionado != null}" name="pacienteId" class="form-select" required>
+                                <option value="">-- Seleccione un paciente --</option>
+                                <option th:each="p : ${pacientes}" th:value="${p.id}" th:text="${p.nombre + ' ' + p.apellido}"></option>
+                            </select>
+                        </div>
+
+                        <!-- MÉDICO -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Médico *</label>
+                            <input type="text" th:if="${medicoSeleccionado != null}" class="form-control bg-light" 
+                                   th:value="'Dr. ' + ${medicoSeleccionado.nombre} + ' ' + ${medicoSeleccionado.apellido}" readonly>
+                            <input type="hidden" th:if="${medicoSeleccionado != null}" name="medicoId" th:value="${medicoSeleccionado.id}">
+
+                            <select th:unless="${medicoSeleccionado != null}" name="medicoId" class="form-select" required>
+                                <option value="">-- Seleccione un médico --</option>
+                                <option th:each="m : ${medicos}" th:value="${m.id}" th:text="${'Dr. ' + m.nombre + ' ' + m.apellido}"></option>
+                            </select>
+                        </div>
+
+                        <!-- FECHA -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Fecha y Hora *</label>
+                            <input type="datetime-local" name="fechaHora" class="form-control" required>
+                        </div>
+
+                        <!-- MOTIVO (Solo para nuevas citas) -->
+                        <div class="mb-4" th:if="${cita == null}">
+                            <label class="form-label fw-bold">Motivo de la consulta</label>
+                            <textarea name="motivo" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <hr>
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/personal" class="btn btn-secondary">Cancelar</a>
+                            <button type="submit" class="btn" th:classappend="${cita != null} ? 'btn-warning' : 'btn-primary'" id="btnProgramar">
+                                <i class="bi bi-save"></i> 
+                                <span th:text="${cita != null} ? 'Guardar Nueva Fecha' : 'Programar Cita'"></span>
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</div>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.getElementById('formCita').addEventListener('submit', function(e) {
+        const btn = document.getElementById('btnProgramar');
+        if (btn && !btn.disabled) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando...';
+        }
+    });
+</script>
+
+</body>
+</html>

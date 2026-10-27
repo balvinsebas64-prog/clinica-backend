@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+
+<!-- SIDEBAR -->
+<aside th:fragment="sidebar" class="app-sidebar">
+    <!-- Logo -->
+    <div class="sidebar-brand">
+        <i class="bi bi-hospital"></i>
+        <span>Hospital EsSalud</span>
+    </div>
+
+    <!-- Perfil del usuario -->
+    <div class="sidebar-profile">
+        <img th:src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + ${#authentication.name}"
+             alt="Avatar">
+        <div class="profile-info">
+            <strong sec:authentication="name">Usuario</strong>
+            <small sec:authorize="hasRole('ADMIN')">Administrador</small>
+            <small sec:authorize="hasRole('MEDICO')">Médico</small>
+            <small sec:authorize="hasRole('PACIENTE')">Paciente</small>
+            <small sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')">Personal</small>
+        </div>
+    </div>
+
+    <!-- Menú -->
+    <nav class="sidebar-menu">
+
+        <!-- 1. DASHBOARDS -->
+        <a th:href="@{/admin}" sec:authorize="hasRole('ADMIN')" class="sidebar-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a th:href="@{/doctor}" sec:authorize="hasRole('MEDICO')" class="sidebar-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a th:href="@{/paciente}" sec:authorize="hasRole('PACIENTE')" class="sidebar-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+        <a th:href="@{/personal}" sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+
+        <!-- 2. PACIENTE -->
+        <a th:href="@{/paciente}" sec:authorize="hasRole('PACIENTE')" class="sidebar-link">
+            <i class="bi bi-shield-check"></i> Mi Seguro
+        </a>
+        <a th:href="@{/citas/programar}" sec:authorize="hasRole('PACIENTE')" class="sidebar-link">
+            <i class="bi bi-calendar-plus"></i> Agendar Cita
+        </a>
+        <!-- ⭐ APUNTA A LA NUEVA VISTA EXCLUSIVA -->
+        <a th:href="@{/paciente/mis-citas}" sec:authorize="hasRole('PACIENTE')" class="sidebar-link">
+            <i class="bi bi-calendar-check"></i> Mis Citas
+        </a>
+       <a th:href="@{/paciente/mi-historia}" sec:authorize="hasRole('PACIENTE')" class="sidebar-link">
+    <i class="bi bi-file-medical-fill"></i> Mi Historia
+</a>
+
+        <!-- 3. PERSONAL -->
+        <a th:href="@{/citas/personal/programar}" sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-calendar-plus"></i> Programar Cita
+        </a>
+        <a th:href="@{/citas/cancelar}" sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-x-circle"></i> Cancelar Cita
+        </a>
+        <a th:href="@{/personal/verificar}" sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-shield-check"></i> Verificar Seguro
+        </a>
+        <a th:href="@{/pacientes}" sec:authorize="hasAnyRole('ADMIN', 'PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-people-fill"></i> Pacientes
+        </a>
+        <a th:href="@{/medicos}" sec:authorize="hasAnyRole('ADMIN', 'PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-person-badge-fill"></i> Médicos
+        </a>
+        <a th:href="@{/personal/doctores-resumen}" sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-clipboard2-pulse"></i> Doctores y Resumen
+        </a>
+        <a th:href="@{/citas}" sec:authorize="hasRole('PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-calendar-check-fill"></i> Todas las Citas
+        </a>
+        <a th:href="@{/citas/reprogramar}" sec:authorize="hasAnyRole('ADMIN', 'PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-calendar-week"></i> Reprogramar Citas
+        </a>
+
+        <!-- 4. ADMIN -->
+        <a th:href="@{/usuarios}" sec:authorize="hasRole('ADMIN')" class="sidebar-link">
+            <i class="bi bi-shield-lock-fill"></i> Usuarios
+        </a>
+        <a th:href="@{/admin/seguros}" sec:authorize="hasRole('ADMIN')" class="sidebar-link">
+            <i class="bi bi-shield-check"></i> Gestión Seguros
+        </a>
+        <a th:href="@{/reportes/generar}" sec:authorize="hasRole('ADMIN')" class="sidebar-link">
+            <i class="bi bi-bar-chart-fill"></i> Reportes
+        </a>
+        <a th:href="@{/admin/configuracion}" sec:authorize="hasRole('ADMIN')" class="sidebar-link">
+            <i class="bi bi-gear-fill"></i> Configuración
+        </a>
+        
+        <!-- ⭐ NUEVO: AUDITORÍA (solo ADMIN) -->
+        <a th:href="@{/admin/auditoria}" sec:authorize="hasRole('ADMIN')" class="sidebar-link">
+            <i class="bi bi-fingerprint"></i> Auditoría
+        </a>
+
+        <!-- 5. MÉDICO -->
+        <a th:href="@{/doctor/mis-citas}" sec:authorize="hasRole('MEDICO')" class="sidebar-link">
+            <i class="bi bi-calendar-check"></i> Mis Citas
+        </a>
+        <a th:href="@{/doctor/mis-pacientes}" sec:authorize="hasRole('MEDICO')" class="sidebar-link">
+            <i class="bi bi-people"></i> Mis Pacientes
+        </a>
+        <a th:href="@{/doctor/diagnosticos}" sec:authorize="hasRole('MEDICO')" class="sidebar-link">
+            <i class="bi bi-clipboard-pulse"></i> Mis Diagnósticos
+        </a>
+        <a th:href="@{/doctor/diagnosticos}" sec:authorize="hasRole('MEDICO')" class="sidebar-link">
+            <i class="bi bi-file-medical-fill"></i> Historias
+        </a>
+
+        <!-- 6. COMUNES -->
+        <a th:href="@{/disponibilidad}" sec:authorize="hasAnyRole('ADMIN', 'MEDICO', 'PACIENTE', 'PERSONAL_ADMINISTRATIVO')" class="sidebar-link">
+            <i class="bi bi-clock-history"></i> Disponibilidad
+        </a>
+        
+        <!-- 7. NOTIFICACIONES -->
+        <a th:href="@{/notificaciones}" class="sidebar-link d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-bell-fill"></i> Notificaciones</span>
+            <!-- Si hay notificaciones, muestra el badge rojo con el número -->
+            <span th:if="${notificacionesNoLeidasGlobal != null and notificacionesNoLeidasGlobal > 0}" 
+                  class="badge bg-danger rounded-pill">
+                <span th:text="${notificacionesNoLeidasGlobal}">0</span>
+            </span>
+        </a>
+
+    </nav>
+
+    <!-- Cerrar sesión -->
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="sidebar-link text-danger w-100">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </button>
+        </form>
+    </div>
+
+</aside>
+
+</body>
+</html>

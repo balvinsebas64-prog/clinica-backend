@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -27,9 +28,33 @@ public class UsuarioController {
     @Autowired
     private MedicoRepository medicoRepo;
 
+    // ⭐ LISTAR CON BUSCADOR
     @GetMapping
-    public String listar(Model model) {
-        model.addAttribute("usuarios", usuarioRepo.findAll());
+    public String listar(
+            @RequestParam(value = "buscar", required = false) String buscar,
+            @RequestParam(value = "rolId", required = false) Integer rolId,
+            Model model) {
+
+        List<Usuario> usuarios = usuarioRepo.findAll(); // Empezamos con todos
+
+        // 1. Filtrar por Rol (si se seleccionó uno)
+        if (rolId != null) {
+            usuarios = usuarioRepo.findByRoles_Id(rolId);
+            model.addAttribute("rolSeleccionado", rolId);
+        }
+
+        // 2. Filtrar por Texto (si se escribió algo)
+        if (buscar != null && !buscar.isEmpty()) {
+            usuarios = usuarios.stream()
+                .filter(u -> u.getUsername().toLowerCase().contains(buscar.toLowerCase()) ||
+                             (u.getNombreCompleto() != null && u.getNombreCompleto().toLowerCase().contains(buscar.toLowerCase())) ||
+                             (u.getEmail() != null && u.getEmail().toLowerCase().contains(buscar.toLowerCase())))
+                .collect(java.util.stream.Collectors.toList());
+            model.addAttribute("buscar", buscar);
+        }
+
+        model.addAttribute("usuarios", usuarios);
+        model.addAttribute("roles", rolRepo.findAll()); // Para llenar el combo de roles
         return "usuario/listar";
     }
 
@@ -37,7 +62,6 @@ public class UsuarioController {
     public String crear(Model model) {
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("roles", rolRepo.findAll());
-        // ⭐ SOLO médicos SIN usuario
         model.addAttribute("medicos", medicoRepo.findByUsuarioIsNull());
         model.addAttribute("modoEdicion", false);
         return "usuario/crear";
@@ -49,7 +73,6 @@ public class UsuarioController {
             .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + id));
         model.addAttribute("usuario", usuario);
         model.addAttribute("roles", rolRepo.findAll());
-        // ⭐ SOLO médicos SIN usuario
         model.addAttribute("medicos", medicoRepo.findByUsuarioIsNull());
         model.addAttribute("modoEdicion", true);
         return "usuario/crear";
@@ -70,11 +93,11 @@ public class UsuarioController {
             }
         }
 
-        usuarioRepo.save(usuario);
+        usuario = usuarioRepo.save(usuario);
 
         if (medicoId != null) {
             Medico medico = medicoRepo.findById(medicoId).orElse(null);
-            if (medico != null && medico.getUsuario() == null) {
+            if (medico != null) {
                 medico.setUsuario(usuario);
                 medicoRepo.save(medico);
             }
@@ -86,6 +109,15 @@ public class UsuarioController {
 
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable Integer id) {
+        Medico medico = medicoRepo.findAll().stream()
+            .filter(m -> m.getUsuario() != null && m.getUsuario().getId().equals(id))
+            .findFirst()
+            .orElse(null);
+        if (medico != null) {
+            medico.setUsuario(null);
+            medicoRepo.save(medico);
+        }
+
         usuarioRepo.deleteById(id);
         return "redirect:/usuarios?exito=Usuario eliminado correctamente";
     }

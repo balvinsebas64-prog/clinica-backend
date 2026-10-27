@@ -3,9 +3,13 @@
 <head th:replace="~{fragments/head :: head}"></head>
 <body>
 
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<button class="sidebar-toggle" onclick="document.querySelector('.app-sidebar').classList.toggle('show')">
+    <i class="bi bi-list"></i>
+</button>
 
-<div class="container py-4">
+<div class="app-content">
+
     <div class="page-header">
         <div>
             <h1 class="page-title">
@@ -23,7 +27,6 @@
         </button>
     </div>
 
-    <!-- Buscador (solo para médicos/admin) -->
     <div class="card border-0 shadow-sm mb-4" th:if="${!esPaciente}">
         <div class="card-body">
             <div class="row g-3">
@@ -38,7 +41,6 @@
         </div>
     </div>
 
-    <!-- Aviso según el rol -->
     <div class="alert alert-info" th:if="${esPaciente}">
         <i class="bi bi-shield-lock"></i> <strong>Acceso Personal:</strong> Aquí puedes ver tu historia clínica.
     </div>
@@ -47,8 +49,7 @@
         <i class="bi bi-shield-lock"></i> <strong>Acceso Restringido:</strong> Solo médicos autorizados pueden consultar las historias clínicas.
     </div>
 
-    <!-- Tabla de Historias -->
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm mb-4">
         <div class="card-header bg-info text-white">
             <h5 class="mb-0">
                 <i class="bi bi-file-medical"></i>
@@ -90,10 +91,23 @@
             </table>
         </div>
     </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
 <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+<script>
+    document.addEventListener('click', function(e) {
+        const sidebar = document.querySelector('.app-sidebar');
+        const toggle = document.querySelector('.sidebar-toggle');
+        if (window.innerWidth <= 992 && sidebar && sidebar.classList.contains('show')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
